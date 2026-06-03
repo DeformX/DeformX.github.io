@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DeformX — A Versatile Co-Simulation Framework for Deformable Linear Objects</title>
+  <meta name="description" content="DeformX is a co-simulation framework that couples a dedicated Cosserat rod physics engine with NVIDIA Isaac Sim for physically faithful and visually realistic simulation of deformable linear objects (DLOs), supporting perception and robot learning." />
+  <meta name="author" content="Yi Yang, Xiang Fei, Lehong Wang, Chenhao Li, Zilin Dai, Henry Kou, Howie Choset, Lu Li" />
+
+  <!-- Open Graph / social -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://deformx.github.io/" />
+  <meta property="og:title" content="DeformX: A Versatile Co-Simulation Framework for Deformable Linear Objects" />
+  <meta property="og:description" content="Physically faithful and visually realistic simulation of wires, cables, and ropes — coupling a Cosserat rod engine with NVIDIA Isaac Sim for perception and robot learning." />
+  <meta property="og:image" content="https://deformx.github.io/static/images/og.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="DeformX: Co-Simulation for Deformable Linear Objects" />
+  <meta name="twitter:description" content="A Cosserat rod engine coupled with NVIDIA Isaac Sim — visually realistic, physically faithful DLO simulation for perception and robot learning." />
+  <meta name="twitter:image" content="https://deformx.github.io/static/images/og.jpg" />
+
+  <!-- Favicon: inline SVG, a deforming wire -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M2 18 C 8 6, 14 28, 20 14 S 30 8, 30 16' fill='none' stroke='%232f6df6' stroke-width='3.5' stroke-linecap='round'/%3E%3C/svg%3E" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="static/css/style.css" />
+</head>
+<body>
+
+  <!-- =============================================================== NAV -->
+  <nav class="nav" aria-label="Primary">
+    <div class="wrap">
+      <a href="#top" class="brand">Deform<span class="x">X</span></a>
+      <div class="nav-links">
+        <a class="navlink" href="#abstract">Abstract</a>
+        <a class="navlink" href="#method">Method</a>
+        <a class="navlink" href="#physics">Validation</a>
+        <a class="navlink" href="#dataset">Dataset</a>
+        <a class="navlink" href="#learning">Robot Learning</a>
+        <a class="navlink" href="#bibtex">BibTeX</a>
+      </div>
+      <div class="nav-cta">
+        <a class="btn btn-ghost btn-sm" href="#" data-link="code" aria-label="Code repository">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.2.8-.5v-1.8c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 5 18.3 5.3 18.3 5.3c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.6.8.5 4.6-1.5 7.9-5.8 7.9-10.9C23.5 5.7 18.3.5 12 .5z"/></svg>
+          <span class="btn-label-long">Code</span>
+        </a>
+        <a class="btn btn-primary btn-sm" href="#" data-link="paper" aria-label="Read the paper">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg>
+          <span class="btn-label-long">Paper</span>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <span id="top"></span>
+
+  <!-- ============================================================== HERO -->
+  <header class="hero">
+    <svg class="hero-bg" preserveAspectRatio="none" viewBox="0 0 1440 520" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="wireGrad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#2f6df6" stop-opacity="0"/>
+          <stop offset="45%" stop-color="#2f6df6" stop-opacity=".55"/>
+          <stop offset="100%" stop-color="#06b6d4" stop-opacity="0"/>
+        </linearGradient>
+        <linearGradient id="wireGrad2" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#06b6d4" stop-opacity="0"/>
+          <stop offset="50%" stop-color="#7c8cff" stop-opacity=".4"/>
+          <stop offset="100%" stop-color="#2f6df6" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <path class="wireA" d="M-40 150 C 280 40, 460 300, 760 170 S 1240 30, 1500 200" fill="none" stroke="url(#wireGrad)" stroke-width="2.5"/>
+      <path class="wireB" d="M-40 340 C 320 250, 520 470, 820 330 S 1220 230, 1500 380" fill="none" stroke="url(#wireGrad2)" stroke-width="2"/>
+    </svg>
+
+    <div class="wrap hero-inner">
+      <span class="venue"><span class="dot"></span> Co-Simulation Framework&nbsp;·&nbsp;Deformable Linear Objects</span>
+
+      <h1>Deform<span class="grad">X</span>: A Versatile Co-Simulation Framework for Deformable Linear Objects</h1>
+      <p class="subtitle">Coupling a dedicated <b>Cosserat rod engine</b> with <b>NVIDIA Isaac&nbsp;Sim</b> for DLO simulation that is both <b>physically faithful</b> and <b>visually realistic</b> — built for perception and robot learning.</p>
+
+      <p class="authors">
+        <span class="author">Yi Yang<sup>1,3,4,†</sup></span>,
+        <span class="author">Xiang Fei<sup>1,†</sup></span>,
+        <span class="author">Lehong Wang<sup>1,†</sup></span>,
+        <span class="author">Chenhao Li<sup>2</sup></span>,
+        <span class="author">Zilin Dai<sup>5</sup></span>,
+        <span class="author">Henry Kou<sup>1</sup></span>,
+        <span class="author">Howie Choset<sup>1</sup></span>,
+        <span class="author">Lu Li<sup>1</sup></span>
+      </p>
+      <p class="affil">
+        <span class="a-item"><sup>1</sup>The Robotics Institute, Carnegie Mellon University</span> &nbsp;·&nbsp;
+        <span class="a-item"><sup>2</sup>Dept. of Mechanical Engineering, CMU</span> &nbsp;·&nbsp;
+        <span class="a-item"><sup>3</sup>Shanghai Jiao Tong University</span> &nbsp;·&nbsp;
+        <span class="a-item"><sup>4</sup>Zhiyuan College, SJTU</span> &nbsp;·&nbsp;
+        <span class="a-item"><sup>5</sup>Harvard University</span>
+      </p>
+      <p class="eq-note"><sup>†</sup>Equal contribution.</p>
+
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#" data-link="paper">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg>
+          Paper
+        </a>
+        <a class="btn btn-ghost" href="#" data-link="arxiv">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          arXiv
+        </a>
+        <a class="btn btn-ghost" href="#" data-link="code">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.2.8-.5v-1.8c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 5 18.3 5.3 18.3 5.3c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.6.8.5 4.6-1.5 7.9-5.8 7.9-10.9C23.5 5.7 18.3.5 12 .5z"/></svg>
+          Code
+        </a>
+        <a class="btn btn-ghost" href="#dataset" data-link="dataset">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5"/><path d="M3 12c0 1.7 4 3 9 3s9-1.3 9-3"/></svg>
+          WireSeg-32k
+        </a>
+      </div>
+    </div>
+
+    <figure class="teaser wrap" data-zoom>
+      <img src="static/images/teaser.png" alt="Overview of DeformX: simulated vs. real wires (left), the co-simulation core coupling NVIDIA Isaac Sim with a Cosserat rod engine through CAD models of DLOs (center), and robot-learning rollouts of a rope-swinging task (right)." />
+      <figcaption class="cap"><b>DeformX</b> is a co-simulation framework for deformable linear objects (DLOs) that integrates NVIDIA Isaac Sim with a dedicated Cosserat rod engine, providing visually and physically realistic simulation. The framework enables scalable data generation and robot learning for DLO perception and manipulation.</figcaption>
+    </figure>
+  </header>
+
+  <!-- ========================================================== ABSTRACT -->
+  <section class="section" id="abstract">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Abstract</span>
+        <h2>Visually realistic <em>and</em> physically faithful DLO simulation</h2>
+      </div>
+      <div class="prose">
+        <p>Deformable linear objects (DLOs) such as wires, cables, and ropes are common in robotic manipulation tasks, yet simulating them with both visual realism and physical accuracy remains challenging. Existing visual simulation methods typically rely on procedural geometric primitives that lack physically grounded deformation behavior, while physics-based approaches with robot-learning support often approximate DLOs as rigid-link chains or generic soft bodies — failing to accurately capture the bending, twisting, and shear mechanics of slender elastic structures.</p>
+        <p>In this work, we introduce <b>DeformX</b>, a co-simulation framework that integrates a dedicated Cosserat rod physics engine with NVIDIA Isaac Sim, enabling DLO simulations that are both physically faithful and visually realistic. Our Cosserat rod engine simulates the dynamics and self-collisions of DLOs, and contact interactions with arbitrary free-form meshes. To achieve high-fidelity visualization, we employ <b>mesh skinning</b> to map discrete rod deformations onto imported CAD models. To the best of our knowledge, DeformX is the first framework for DLO simulation that unifies realistic visualization, principled physics, and compatibility with robot-learning pipelines.</p>
+        <p>We demonstrate its versatility across synthetic data generation and policy learning for DLO manipulation, and validate visual and physical fidelity through comparisons against real-world experiments. Notably, fine-tuning <b>SAM3</b> on DeformX-generated data yields a <b>10.2% mAP@75 improvement</b> in real-image wire segmentation, and a rope-swinging policy trained entirely in DeformX achieves a mean target-hitting error of <b>6.6&nbsp;cm</b> on a UR5e manipulator in real-world trials — highlighting strong sim-to-real transfer.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================= HIGHLIGHTS -->
+  <section class="section alt" id="highlights" aria-label="Key results">
+    <div class="wrap">
+      <div class="stats">
+        <div class="stat">
+          <div class="num">+10.2%</div>
+          <div class="lbl">mAP@75 gain on real wire segmentation after fine-tuning SAM3 on our data</div>
+        </div>
+        <div class="stat">
+          <div class="num">6.6 cm</div>
+          <div class="lbl">Real-world rope-swing tip error on a UR5e — down from 15.1 cm for the baseline</div>
+        </div>
+        <div class="stat">
+          <div class="num">32k</div>
+          <div class="lbl">Rendered images in WireSeg-32k, with instance masks &amp; per-pixel depth</div>
+        </div>
+        <div class="stat">
+          <div class="num">1<span style="font-size:1.2rem">st</span></div>
+          <div class="lbl">Unified DLO sim — visual realism, principled physics &amp; robot learning together</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ METHOD -->
+  <section class="section" id="method">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Method</span>
+        <h2>A co-simulation framework that divides labor cleanly</h2>
+        <p>The Cosserat rod engine governs all DLO dynamics, self-collisions, and rod–mesh contact; Isaac Sim handles rigid bodies, robots, control, and photorealistic rendering. A multi-rate scheme keeps the two tightly and stably coupled across very different time scales.</p>
+      </div>
+
+      <figure class="figure">
+        <div class="frame pad" data-zoom>
+          <img src="static/images/system.png" alt="System overview. Left: existing vision simulators use procedural Bezier curves or cylinders, lacking physics and CAD support. Center: our framework couples Isaac Sim (scene authoring, robot control, rendering) with a Cosserat rod engine (rod dynamics, rod-mesh contact) exchanging rod state and impulse/wrench at different time steps. Right: existing RL simulators use cylinder-and-ball-joint or soft-material approximations." loading="lazy" />
+        </div>
+        <figcaption class="cap">Compared with existing simulators for vision (left) and RL (right), DeformX jointly achieves <b>visual realism</b>, <b>physical accuracy</b>, <b>DLO CAD support</b>, and <b>robot-learning support</b> with minimal parameter tuning by combining Isaac Sim and a dedicated Cosserat rod engine.</figcaption>
+      </figure>
+
+      <div class="cards" style="margin-top:48px">
+        <div class="card">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg></div>
+          <h3>Multi-rate co-simulation</h3>
+          <p>The rod engine replicates Isaac Sim's semi-implicit Euler integration to substep DLO dynamics at ~10⁻⁵ s within each ~10⁻² s Isaac step, then returns integrated impulses and wrenches for stable bidirectional coupling.</p>
+        </div>
+        <div class="card">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+          <h3>Free-form mesh contact</h3>
+          <p>Building on PyElastica's penalty contact, we add closest-point queries against arbitrary meshes — accelerated by a BVH and AABB broad-phase pruning, with a repulsion margin that prevents deep penetration under large time steps.</p>
+        </div>
+        <div class="card">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.3 7 12 12l8.7-5M12 22V12"/></svg></div>
+          <h3>Mesh-skinned visualization</h3>
+          <p>Discrete Cosserat rod deformations drive a skinned tubular mesh every Isaac step, so high-resolution CAD assets deform in full consistency with the underlying physics — yielding CAD-quality, reusable DLO visuals.</p>
+        </div>
+      </div>
+
+      <div class="fig-grid two" style="margin-top:56px">
+        <figure class="figure">
+          <div class="frame pad" data-zoom>
+            <img src="static/images/cosserat.png" alt="Cosserat rod modeling: (a) continuous rod with centerline r(s,t) and material frame Q; (b) discrete rod with vertices and per-segment frames; (c) a mesh rigged to the discrete rod." loading="lazy" />
+          </div>
+          <figcaption class="cap"><b>Cosserat rod modeling of DLOs.</b> (a) Continuous representation with centerline and material frame; (b) discrete vertices and segment frames; (c) mesh skinned to the discrete rod for realistic visualization.</figcaption>
+        </figure>
+        <div class="prose" style="font-size:1.04rem">
+          <p>We model a DLO as a slender elastic rod under <b>Cosserat rod theory</b>, capturing all deformation modes of a 1-D continuum — stretching, shearing, bending, and twisting — in a unified formulation.</p>
+          <p>Dynamics follow conservation of linear and angular momentum, with material behavior set by physically meaningful parameters such as <b>Young's modulus</b> and <b>shear modulus</b>. This establishes a direct link between simulation behavior and real material properties, enabling principled calibration instead of heuristic joint-stiffness tuning.</p>
+          <p>The engine ships as a Python module embedded in Isaac Sim's scripting environment, supporting both interactive UI workflows and headless execution — a single pipeline from scene authoring to physics and photorealistic rendering.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================== PHYSICS -->
+  <section class="section alt" id="physics">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Physical Validation</span>
+        <h2>Sim matches reality — knots, twist, and free-form contact</h2>
+        <p>We validate physical fidelity with two real-world experiments whose parameters come from factory material specifications, not manual tuning.</p>
+      </div>
+
+      <figure class="figure">
+        <div class="frame" data-zoom>
+          <img src="static/images/sim2real.jpg" alt="(a) A trefoil knot tied on a wire and continuously twisted; simulation (top) reproduces the same shape transitions seen in real experiments (bottom). (b) A flexible rope (scarf) wrapped around a rigid Stanford bunny, showing multi-point contact, sliding, and self-contact in both real and simulated rollouts." loading="lazy" />
+        </div>
+        <figcaption class="cap"><b>Sim-to-real comparison.</b> (a) A <b>trefoil knot</b> under continuous twist undergoes the same qualitative shape transitions in simulation and reality. (b) A flexible rope wrapping a rigid <b>bunny</b> exhibits multi-point contact, sliding, and self-contact — conforming to the geometry with stable, interpenetration-free behavior.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ========================================================== DATASET -->
+  <section class="section" id="dataset">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Application · Data Generation</span>
+        <h2>WireSeg-32k — a wire instance segmentation dataset</h2>
+        <p>Using the framework, we generate <b>32,000 rendered images</b> across 300+ independent simulation runs, with per-wire instance masks, per-pixel depth, and easy / medium / hard difficulty tiers across three scenario categories: <b>wire-on-plane</b>, <b>flying wires</b>, and <b>data center</b>.</p>
+      </div>
+
+      <figure class="figure">
+        <div class="frame pad" data-zoom>
+          <img src="static/images/pipeline.png" alt="Data generation pipeline: an asset library (CAD/3D assets, materials, HDRI maps) and scene authoring feed random sampling of wire count, shape and placement; the Cosserat rod engine simulates wire dynamics and contact; a rendering module performs skeleton-driven wire rendering and domain randomization; outputs are RGB, ground-truth masks and depth, then split by difficulty." loading="lazy" />
+        </div>
+        <figcaption class="cap"><b>Generation pipeline.</b> Randomized scenes are built from asset libraries; wires are simulated with the Cosserat rod engine and visualized as skinned meshes. RGB images, segmentation masks, and depth maps are rendered with domain randomization, then split by difficulty.</figcaption>
+      </figure>
+
+      <div class="fig-grid two" style="margin-top:48px">
+        <figure class="figure">
+          <div class="frame" data-zoom>
+            <img src="static/images/dataset.jpg" alt="Representative dataset images across the three settings (wire-on-plane, flying wires, data center) and a real column, organized by Easy, Medium, and Hard rows, with colored ground-truth instance masks for the Hard tier." loading="lazy" />
+          </div>
+          <figcaption class="cap">Representative images across the three settings and Easy / Medium / Hard tiers, with Hard ground-truth instance masks.</figcaption>
+        </figure>
+
+        <div>
+          <p class="tbl-cap"><b>Table 1.</b> WireSeg-32k versus existing DLO datasets.</p>
+          <div class="table-wrap">
+            <table class="tbl">
+              <thead>
+                <tr>
+                  <th class="l">Dataset</th>
+                  <th>Physics<br>Realism</th>
+                  <th>Instance<br>Label</th>
+                  <th>CAD<br>Support</th>
+                  <th>Visually-<br>grounded</th>
+                  <th>Images</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td class="l">HANDLOOM</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td><td>30k</td></tr>
+                <tr><td class="l">FASTDLO</td><td class="no">✗</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td><td>32k</td></tr>
+                <tr><td class="l">Fresnillo et al.</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td><td class="yes">✓</td><td>25k</td></tr>
+                <tr><td class="l">Zanella et al.</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td><td>28.5k</td></tr>
+                <tr><td class="l">ISCUTE</td><td class="no">✗</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td>28k</td></tr>
+                <tr class="ours"><td class="l">WireSeg-32k <b>(Ours)</b></td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td>32k</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="tbl-note">“Physics realism”: physics-based DLO deformation during generation. “Instance label”: per-object masks. “CAD support”: DLOs as free-form meshes. “Visually grounded”: rendered in realistic image-based backgrounds.</p>
+        </div>
+      </div>
+
+      <div style="margin-top:56px">
+        <p class="tbl-cap"><b>Table 2.</b> Fine-tuning SAM3 on WireSeg-32k. We report dataset-level F1@75 and COCO-style mAP@75 (higher is better) across difficulty tiers, the full synthetic set, and a held-out real test set.</p>
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th class="l" rowspan="2">Model</th>
+                <th colspan="2">Hard (Syn)</th>
+                <th colspan="2">Medium (Syn)</th>
+                <th colspan="2">Easy (Syn)</th>
+                <th colspan="2">Total (Syn)</th>
+                <th colspan="2">Total (Real)</th>
+              </tr>
+              <tr>
+                <th>F1@75</th><th>mAP@75</th>
+                <th>F1@75</th><th>mAP@75</th>
+                <th>F1@75</th><th>mAP@75</th>
+                <th>F1@75</th><th>mAP@75</th>
+                <th>F1@75</th><th>mAP@75</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="l">SAM3 (Base)</td>
+                <td>0.179</td><td>0.066</td>
+                <td>0.446</td><td>0.310</td>
+                <td>0.803</td><td>0.735</td>
+                <td>0.409</td><td>0.290</td>
+                <td>0.296</td><td>0.157</td>
+              </tr>
+              <tr class="ours">
+                <td class="l">SAM3 + LoRA</td>
+                <td>0.225</td><td>0.102</td>
+                <td>0.512</td><td>0.404</td>
+                <td>0.850</td><td>0.816</td>
+                <td>0.465</td><td>0.365</td>
+                <td>0.314</td><td class="best">0.173</td>
+              </tr>
+              <tr class="delta">
+                <td class="l">Δ (LoRA − Base)</td>
+                <td>+25.7%</td><td>+54.5%</td>
+                <td>+14.8%</td><td>+30.3%</td>
+                <td>+5.9%</td><td>+11.0%</td>
+                <td>+13.7%</td><td>+25.7%</td>
+                <td>+6.1%</td><td>+10.2%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="tbl-note">Off-the-shelf SAM3 is run in text-prompt mode with the prompt <code>“cable”</code>. LoRA adapters (rank 16, α=32) are inserted into the attention projections; 5 epochs, lr 1×10⁻⁵, effective batch size 16. A complementary set of <b>300 in-the-wild real images</b> with manual annotations is used for the real-world evaluation.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================= LEARNING -->
+  <section class="section alt" id="learning">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Application · Robot Learning</span>
+        <h2>Dynamic rope swinging that transfers to a real UR5e</h2>
+        <p>Dynamic “whipping” amplifies modeling error: small inaccuracies in bending, torsion, and contact cause large tip-trajectory deviations. We use a planar hit-target rope-swinging benchmark to stress-test sim-to-real transfer, training PPO with everything fixed except the DLO backend.</p>
+      </div>
+
+      <div class="fig-grid two" style="align-items:start">
+        <figure class="figure">
+          <div class="frame" data-zoom>
+            <img src="static/images/calibration.jpg" alt="(a) A robot-driven rope experiment: one end anchored to the ground, the other attached to a UR5e executing a sinusoidal trajectory, with time-stamped overlays at t = 3.5 s, 6.5 s and 11.8 s. (b) Trajectory error over time, where DeformX (Ours) stays low while the baseline spikes near t = 2.5 s." loading="lazy" />
+          </div>
+          <figcaption class="cap"><b>Parameter calibration.</b> Rope parameters are fit by replaying a motion-captured sinusoidal end-effector trajectory in simulation, minimizing per-marker trajectory error so both simulators start from a fair, calibrated baseline.</figcaption>
+        </figure>
+
+        <figure class="figure">
+          <div class="frame" data-zoom>
+            <img src="static/images/rl_demo.jpg" alt="Goal-conditioned dynamic manipulation. Left: simulation rollout with the rope tip tracing toward a star-marked goal. Right: real-world UR5e rollout reproducing the motion. Colored curves visualize the DLO configuration over time." loading="lazy" />
+          </div>
+          <figcaption class="cap"><b>Goal-conditioned rope swinging.</b> The learned policy reaches the star-marked goal. <i>Left:</i> simulation rollout. <i>Right:</i> real-world rollout. Colored curves show the DLO configuration over time.</figcaption>
+        </figure>
+      </div>
+
+      <div style="margin-top:48px">
+        <p class="tbl-cap"><b>Table 3.</b> Hit-target results — minimum tip-to-goal distance <em>d</em><sub>min</sub> (cm). Real-world results are mean ± std over <em>n</em> = 10 repeated executions per goal.</p>
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th class="l">Target Point</th>
+                <th class="l">Method</th>
+                <th>Sim <em>d</em><sub>min</sub></th>
+                <th>Real (<em>n</em>=10) <em>d</em><sub>min</sub></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="grp"><td class="l" rowspan="2">(0, 200, 230)</td><td class="l">Baseline</td><td>4.9</td><td>15.1 ± 6.1</td></tr>
+              <tr class="ours"><td class="l">DeformX (Ours)</td><td>4.2</td><td><span class="best">6.6</span> ± 4.7</td></tr>
+
+              <tr class="grp"><td class="l" rowspan="2">(0, 200, 150)</td><td class="l">Baseline</td><td>4.4</td><td>25.9 ± 8.9</td></tr>
+              <tr class="ours"><td class="l">DeformX (Ours)</td><td>1.4</td><td><span class="best">7.3</span> ± 1.2</td></tr>
+
+              <tr class="grp"><td class="l" rowspan="2">(0, 170, 50)</td><td class="l">Baseline</td><td>4.3</td><td>30.4 ± 14.3</td></tr>
+              <tr class="ours"><td class="l">DeformX (Ours)</td><td>3.3</td><td><span class="best">5.8</span> ± 3.2</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="tbl-note">Both simulators achieve low in-sim error, but only DeformX transfers reliably to the real robot — evidence that physically accurate bending, torsion, and contact are critical for sim-to-real transfer in dynamic rope swinging.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================== BIBTEX -->
+  <section class="section" id="bibtex">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Citation</span>
+        <h2>BibTeX</h2>
+      </div>
+      <div class="bibtex">
+        <button class="copy-btn" id="copyBib" aria-label="Copy BibTeX to clipboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          <span id="copyTxt">Copy</span>
+        </button>
+<pre id="bibContent"><span class="k">@misc</span>{yang2026deformx,
+  <span class="f">title</span>  = {DeformX: A Versatile Co-Simulation Framework for
+            Deformable Linear Objects},
+  <span class="f">author</span> = {Yang, Yi and Fei, Xiang and Wang, Lehong and Li, Chenhao
+            and Dai, Zilin and Kou, Henry and Choset, Howie and Li, Lu},
+  <span class="f">note</span>   = {Preprint. Under review},
+  <span class="f">year</span>   = {2026}
+}</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================== FOOTER -->
+  <footer class="footer">
+    <div class="wrap">
+      <div class="affils">
+        <h3>Affiliations</h3>
+        <p>
+          <sup>1</sup>The Robotics Institute, Carnegie Mellon University ·
+          <sup>2</sup>Department of Mechanical Engineering, Carnegie Mellon University ·
+          <sup>3</sup>School of Ocean and Civil Engineering, Shanghai Jiao Tong University ·
+          <sup>4</sup>Zhiyuan College, Shanghai Jiao Tong University ·
+          <sup>5</sup>John A. Paulson School of Engineering and Applied Sciences, Harvard University
+        </p>
+      </div>
+      <div class="ack">
+        <h3>Acknowledgment</h3>
+        <p>Generative AI tools were used for language refinement and code assistance; all content was reviewed, validated, and integrated by the authors, who take full responsibility for the originality and correctness of this work.</p>
+        <p style="margin-top:10px; color:var(--faint)">Page template &amp; figures © the authors. Built for the DeformX project.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- =========================================================== LIGHTBOX -->
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Enlarged figure">
+    <button class="close" id="lbClose" aria-label="Close">&times;</button>
+    <img id="lbImg" src="" alt="" />
+  </div>
+
+  <script src="static/js/main.js"></script>
+</body>
+</html>
