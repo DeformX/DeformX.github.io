@@ -351,6 +351,73 @@
   svg .n-a circle{fill:var(--graphite);stroke:var(--cyan);}
   svg .n-b circle{fill:var(--graphite);stroke:var(--orange);}
   svg .center{fill:var(--ink);}
+
+  /* keep anchored sections clear of the sticky nav */
+  html{scroll-padding-top:80px;}
+
+  /* ===================== MOBILE / TABLET ===================== */
+  @media(max-width:760px){
+    .wrap{padding:0 18px;}
+    section.block{padding:60px 0;}
+    .sechead{margin-bottom:34px;}
+    .sechead p{font-size:15.5px;}
+    .lead,.prose p{font-size:15.5px;line-height:1.7;}
+
+    /* hero */
+    .hero-inner{padding:44px 18px 44px;}
+    .pill{margin-bottom:22px;font-size:10px;padding:6px 13px;flex-wrap:wrap;justify-content:center;row-gap:2px;}
+    .hero-title{font-size:clamp(46px,16vw,72px);}
+    .hero-tag{font-size:17px;margin-top:18px;}
+    .authors{font-size:15px;margin-top:26px;line-height:1.8;}
+    .affil{font-size:12.5px;}
+    .actions{gap:10px;margin-top:28px;}
+    .btn{padding:11px 18px;font-size:14px;}
+    .hero-figure{margin-top:36px;}
+    .framewrap .tick{width:13px;height:13px;}
+    .figcap{font-size:10px;padding:30px 14px 12px;}
+
+    /* stat strip */
+    .stat{padding:30px 22px;}
+
+    /* method cards / figures */
+    .mcards{margin-top:32px;gap:16px;}
+    .mcard{padding:22px 20px;}
+    .figprose{margin-top:36px;gap:22px;}
+    .figure .cap{padding:14px 16px;font-size:13px;}
+
+    /* tables: tighter cells + scroll affordance */
+    .table-wrap{position:relative;-webkit-overflow-scrolling:touch;}
+    table.tbl th,table.tbl td{padding:10px 11px;}
+    table.tbl{font-size:12.5px;}
+    .tbl-cap{font-size:13.5px;}
+    .tbl-note{font-size:12px;}
+
+    /* dataset CTA */
+    .dataset-cta .left,.dataset-cta .right{padding:28px 24px;}
+    .dataset-cta h3{font-size:25px;}
+
+    /* bibtex */
+    .bibtex pre{padding:20px 18px;font-size:12px;line-height:1.7;}
+    .copy-btn{top:10px;right:10px;padding:6px 10px;font-size:11px;}
+
+    /* video play button a touch smaller */
+    .vplay .ring{width:58px;height:58px;}
+
+    /* footer */
+    footer{padding:48px 0 40px;}
+    .foot-grid{gap:28px;}
+    .foot-bottom{flex-direction:column;gap:8px;}
+
+    /* disable lift-on-hover (no hover on touch; avoids sticky transforms) */
+    .mcard:hover,.ccard:hover,.vcard:hover,.btn:hover,.paper-thumb:hover{transform:none;box-shadow:none;}
+  }
+
+  @media(max-width:430px){
+    .hero-title{font-size:clamp(42px,15vw,58px);}
+    .brand .bname{font-size:17px;}
+    .stat .num{font-size:38px;}
+    .btn{flex:1 1 auto;justify-content:center;}
+  }
 </style>
 </head>
 <body>
