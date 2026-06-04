@@ -1,448 +1,818 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DeformX — A Versatile Co-Simulation Framework for Deformable Linear Objects</title>
-  <meta name="description" content="DeformX is a co-simulation framework that couples a dedicated Cosserat rod physics engine with NVIDIA Isaac Sim for physically faithful and visually realistic simulation of deformable linear objects (DLOs), supporting perception and robot learning." />
-  <meta name="author" content="Yi Yang, Xiang Fei, Lehong Wang, Chenhao Li, Zilin Dai, Henry Kou, Howie Choset, Lu Li" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DeformX — A Versatile Co-Simulation Framework for Deformable Linear Objects</title>
+<meta name="description" content="DeformX integrates a Cosserat rod physics engine with NVIDIA Isaac Sim for physically accurate, photorealistic simulation of cables, wires, and ropes — and large-scale synthetic dataset generation." />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="DeformX — A Versatile Co-Simulation Framework for Deformable Linear Objects" />
+<meta property="og:description" content="Cosserat rod physics × NVIDIA Isaac Sim for physically accurate, photorealistic DLO simulation and synthetic dataset generation." />
+<meta property="og:image" content="assets/img/og.jpg" />
+<meta property="og:url" content="https://deformx.github.io/" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="DeformX — Co-Simulation for Deformable Linear Objects" />
+<meta name="twitter:description" content="Cosserat rod physics × NVIDIA Isaac Sim for accurate DLO simulation and synthetic data." />
+<meta name="twitter:image" content="assets/img/og.jpg" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' rx='24' fill='%230E1116'/%3E%3Cg fill='none' stroke-linecap='round' stroke-width='10'%3E%3Cpath d='M30,30 C60,44 64,76 90,90' stroke='%2323D8EA'/%3E%3Cpath d='M90,30 C64,44 60,76 30,90' stroke='%23FF9551'/%3E%3C/g%3E%3Crect x='54' y='54' width='12' height='12' rx='2' transform='rotate(45 60 60)' fill='%23EAECEC'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --graphite:#0E1116;
+    --graphite-2:#12161d;
+    --card:#171c25;
+    --card-2:#1b212b;
+    --line:#262d39;
+    --line-soft:#1e242e;
+    --ink:#EDEFF2;
+    --ink-2:#C5CAD3;
+    --muted:#878E99;
+    --faint:#5b626d;
+    --cyan:#23D8EA;
+    --cyan-deep:#16CFE2;
+    --orange:#FF9551;
+    --orange-deep:#FF8C42;
+    --maxw:1120px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;background:var(--graphite);color:var(--ink);
+    font-family:"Space Grotesk",system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;line-height:1.6;
+    overflow-x:hidden;
+  }
+  a{color:inherit;text-decoration:none;}
+  img{max-width:100%;display:block;}
+  ::selection{background:var(--cyan);color:#04161a;}
 
-  <!-- Open Graph / social -->
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://deformx.github.io/" />
-  <meta property="og:title" content="DeformX: A Versatile Co-Simulation Framework for Deformable Linear Objects" />
-  <meta property="og:description" content="Physically faithful and visually realistic simulation of wires, cables, and ropes — coupling a Cosserat rod engine with NVIDIA Isaac Sim for perception and robot learning." />
-  <meta property="og:image" content="https://deformx.github.io/static/images/og.jpg" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="DeformX: Co-Simulation for Deformable Linear Objects" />
-  <meta name="twitter:description" content="A Cosserat rod engine coupled with NVIDIA Isaac Sim — visually realistic, physically faithful DLO simulation for perception and robot learning." />
-  <meta name="twitter:image" content="https://deformx.github.io/static/images/og.jpg" />
+  .mono{font-family:"IBM Plex Mono",monospace;}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px;}
 
-  <!-- Favicon: inline SVG, a deforming wire -->
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M2 18 C 8 6, 14 28, 20 14 S 30 8, 30 16' fill='none' stroke='%232f6df6' stroke-width='3.5' stroke-linecap='round'/%3E%3C/svg%3E" />
+  .eyebrow{
+    font-family:"IBM Plex Mono",monospace;font-size:11.5px;font-weight:500;
+    letter-spacing:.26em;text-transform:uppercase;color:var(--muted);
+  }
+  .accent-cyan{color:var(--cyan);}
+  .accent-orange{color:var(--orange);}
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="static/css/style.css" />
+  /* ===================== NAV ===================== */
+  nav{
+    position:sticky;top:0;z-index:100;
+    background:rgba(14,17,22,.72);backdrop-filter:blur(14px);
+    border-bottom:1px solid transparent;transition:border-color .3s,background .3s;
+  }
+  nav.scrolled{border-bottom-color:var(--line-soft);}
+  nav .row{display:flex;align-items:center;justify-content:space-between;height:64px;}
+  .brand{display:flex;align-items:center;gap:11px;}
+  .brand .bmark{width:30px;height:30px;}
+  .brand .bname{font-weight:600;letter-spacing:-.02em;font-size:18px;}
+  .navlinks{display:flex;align-items:center;gap:30px;}
+  .navlinks a{font-size:14px;color:var(--ink-2);transition:color .2s;}
+  .navlinks a:hover{color:var(--cyan);}
+  .navlinks .ghbtn{
+    display:inline-flex;align-items:center;gap:8px;
+    border:1px solid var(--line);border-radius:8px;padding:7px 14px;
+    font-size:13px;color:var(--ink);transition:.2s;
+  }
+  .navlinks .ghbtn:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(35,216,234,.06);}
+  @media(max-width:760px){ .navlinks a:not(.ghbtn){display:none;} }
+
+  /* ===================== HERO ===================== */
+  .hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line-soft);}
+  .hero .dots{
+    position:absolute;inset:0;
+    background-image:radial-gradient(#1a212c 1.3px,transparent 1.3px);
+    background-size:32px 32px;-webkit-mask-image:radial-gradient(ellipse 80% 70% at 50% 30%,#000 35%,transparent 75%);
+    mask-image:radial-gradient(ellipse 80% 70% at 50% 30%,#000 35%,transparent 75%);
+    opacity:.7;
+  }
+  .hero .glow{
+    position:absolute;left:50%;top:-120px;transform:translateX(-50%);
+    width:760px;height:520px;pointer-events:none;
+    background:radial-gradient(closest-side,rgba(35,216,234,.16),transparent 70%);
+    filter:blur(8px);
+  }
+  .hero .glow.b{left:62%;top:60px;width:520px;height:360px;background:radial-gradient(closest-side,rgba(255,149,81,.12),transparent 70%);}
+  .hero-inner{position:relative;text-align:center;padding:64px 28px 56px;max-width:var(--maxw);margin:0 auto;}
+
+  .pill{
+    display:inline-flex;gap:0;align-items:center;
+    border:1px solid var(--line);border-radius:999px;padding:7px 16px;margin-bottom:30px;
+    font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2);
+    background:rgba(23,28,37,.5);
+  }
+  .pill .dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);margin-right:10px;box-shadow:0 0 0 4px rgba(35,216,234,.14);}
+  .pill .sep{color:var(--faint);margin:0 9px;}
+
+  .hero-title{
+    display:flex;align-items:center;justify-content:center;gap:.04em;
+    font-weight:600;letter-spacing:-.04em;line-height:.95;margin:0;
+    font-size:clamp(58px,10vw,118px);
+  }
+  .hero-title .xmark{display:inline-flex;margin-left:.03em;}
+  .hero-title .xmark svg{width:.86em;height:.86em;}
+
+  .hero-tag{
+    font-size:clamp(18px,2.4vw,25px);font-weight:500;color:var(--ink-2);
+    letter-spacing:-.01em;margin:22px auto 0;max-width:720px;text-wrap:balance;
+  }
+
+  /* authors */
+  .authors{margin:34px auto 0;max-width:760px;font-size:16px;color:var(--ink);line-height:1.9;}
+  .authors a{border-bottom:1px solid transparent;transition:.2s;}
+  .authors a:hover{color:var(--cyan);border-bottom-color:var(--cyan);}
+  .authors sup{color:var(--cyan);font-size:11px;font-weight:600;}
+  .authors .noauth{color:var(--ink);cursor:default;}
+  .affil{margin:16px auto 0;max-width:780px;color:var(--muted);font-size:13.5px;line-height:1.8;}
+  .affil .star{color:var(--orange);}
+
+  /* action buttons */
+  .actions{display:flex;flex-wrap:wrap;gap:13px;justify-content:center;margin-top:36px;}
+  .btn{
+    display:inline-flex;align-items:center;gap:9px;
+    padding:12px 22px;border-radius:10px;font-size:14.5px;font-weight:500;
+    border:1px solid var(--line);background:var(--card);color:var(--ink);
+    transition:.2s;cursor:pointer;
+  }
+  .btn svg{width:17px;height:17px;}
+  .btn:hover{transform:translateY(-2px);border-color:var(--faint);}
+  .btn.primary{background:var(--cyan);color:#04161a;border-color:var(--cyan);font-weight:600;}
+  .btn.primary:hover{box-shadow:0 10px 30px -8px rgba(35,216,234,.5);border-color:var(--cyan);}
+  .btn.ghost:hover{background:var(--card-2);}
+
+  /* hero render frame */
+  .hero-figure{position:relative;max-width:980px;margin:56px auto 0;}
+  .framewrap{
+    position:relative;border:1px solid var(--line);border-radius:16px;overflow:hidden;
+    background:var(--card);box-shadow:0 40px 90px -40px rgba(0,0,0,.8);
+  }
+  .framewrap img{width:100%;display:block;}
+  .framewrap .tick{position:absolute;width:18px;height:18px;border:2px solid var(--cyan);opacity:.5;z-index:2;}
+  .tick.tl{top:12px;left:12px;border-right:0;border-bottom:0;}
+  .tick.tr{top:12px;right:12px;border-left:0;border-bottom:0;}
+  .tick.bl{bottom:12px;left:12px;border-right:0;border-top:0;}
+  .tick.br{bottom:12px;right:12px;border-left:0;border-top:0;}
+  .figcap{
+    position:absolute;left:0;right:0;bottom:0;padding:40px 18px 14px;
+    background:linear-gradient(transparent,rgba(8,10,14,.85));
+    font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.08em;color:var(--ink-2);text-transform:uppercase;
+  }
+
+  /* ===================== STAT STRIP ===================== */
+  .stats{border-bottom:1px solid var(--line-soft);background:var(--graphite-2);}
+  .stats .grid{display:grid;grid-template-columns:repeat(3,1fr);}
+  .stat{padding:44px 28px;text-align:center;border-right:1px solid var(--line-soft);}
+  .stat:last-child{border-right:0;}
+  .stat .num{font-size:clamp(40px,5.5vw,62px);font-weight:600;letter-spacing:-.03em;line-height:1;}
+  .stat .num .u{font-size:.5em;font-weight:500;margin-left:.06em;color:var(--ink-2);}
+  .stat .lbl{margin-top:14px;font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);}
+  .stat .sub{margin-top:6px;font-size:13px;color:var(--faint);}
+  @media(max-width:760px){ .stats .grid{grid-template-columns:1fr;} .stat{border-right:0;border-bottom:1px solid var(--line-soft);} .stat:last-child{border-bottom:0;} }
+
+  /* ===================== SECTIONS ===================== */
+  section.block{padding:96px 0;border-bottom:1px solid var(--line-soft);}
+  section.block.alt{background:var(--graphite-2);}
+  .sechead{max-width:760px;margin-bottom:52px;}
+  .sechead .eyebrow{display:block;margin-bottom:16px;}
+  .sechead h2{font-size:clamp(30px,4vw,44px);font-weight:600;letter-spacing:-.03em;line-height:1.08;margin:0;text-wrap:balance;}
+  .sechead p{margin:18px 0 0;color:var(--ink-2);font-size:17px;max-width:680px;}
+  .lead{color:var(--ink-2);font-size:18px;line-height:1.75;max-width:720px;}
+  .lead strong{color:var(--ink);font-weight:600;}
+
+  /* overview two-col */
+  .overview{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;}
+  @media(max-width:860px){ .overview{grid-template-columns:1fr;gap:32px;} }
+
+  /* contribution cards */
+  .contrib{display:grid;grid-template-columns:repeat(2,1fr);gap:22px;}
+  @media(max-width:760px){ .contrib{grid-template-columns:1fr;} }
+  .ccard{
+    border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--card);
+    display:flex;flex-direction:column;transition:.28s;
+  }
+  .ccard:hover{transform:translateY(-4px);border-color:var(--faint);box-shadow:0 30px 60px -36px rgba(0,0,0,.85);}
+  .ccard .imgwrap{position:relative;aspect-ratio:16/10;overflow:hidden;background:var(--graphite);}
+  .ccard .imgwrap img{width:100%;height:100%;object-fit:cover;transition:transform .5s;}
+  .ccard:hover .imgwrap img{transform:scale(1.04);}
+  .ccard .body{padding:24px 24px 26px;}
+  .ccard .ix{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--cyan);letter-spacing:.12em;}
+  .ccard h3{margin:10px 0 9px;font-size:21px;font-weight:600;letter-spacing:-.02em;}
+  .ccard p{margin:0;color:var(--muted);font-size:14.5px;line-height:1.65;}
+
+  /* generic figure */
+  .figure{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--card);}
+  .figure img{width:100%;}
+  .figure .cap{padding:16px 22px;border-top:1px solid var(--line-soft);font-size:14px;color:var(--muted);}
+  .figure .cap strong{color:var(--cyan);font-weight:600;}
+
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:22px;}
+  @media(max-width:760px){ .two{grid-template-columns:1fr;} }
+
+  /* video gallery */
+  .vgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:22px;}
+  @media(max-width:760px){ .vgrid{grid-template-columns:1fr;} }
+  .vcard{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--card);transition:.28s;}
+  .vcard:hover{transform:translateY(-4px);border-color:var(--faint);box-shadow:0 30px 60px -36px rgba(0,0,0,.85);}
+  .vplayer{position:relative;aspect-ratio:4/3;background:#000;overflow:hidden;}
+  .vplayer video,.vplayer iframe{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border:0;display:block;}
+  .vplayer .corner{position:absolute;width:16px;height:16px;border:2px solid var(--cyan);opacity:.55;z-index:3;pointer-events:none;}
+  .vplayer .corner.tl{top:11px;left:11px;border-right:0;border-bottom:0;}
+  .vplayer .corner.br{bottom:11px;right:11px;border-left:0;border-top:0;}
+  .vplay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2;background:rgba(8,10,14,.18);transition:background .25s;}
+  .vplay:hover{background:rgba(8,10,14,.06);}
+  .vplay .ring{width:66px;height:66px;border-radius:50%;background:rgba(35,216,234,.92);display:flex;align-items:center;justify-content:center;box-shadow:0 12px 40px -8px rgba(35,216,234,.5);transition:transform .25s;}
+  .vplay:hover .ring{transform:scale(1.08);}
+  .vplay .ring svg{width:24px;height:24px;margin-left:3px;fill:#04161a;}
+  .vcard .vbody{padding:18px 22px 20px;display:flex;align-items:baseline;justify-content:space-between;gap:14px;}
+  .vcard .vbody .vt{font-size:16px;font-weight:600;letter-spacing:-.01em;}
+  .vcard .vbody .vx{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.12em;color:var(--cyan);text-transform:uppercase;flex:none;}
+  .vcard .vbody .vd{display:block;margin-top:4px;color:var(--muted);font-size:13.5px;font-weight:400;}
+
+  /* dataset CTA */
+  .dataset-cta{
+    border:1px solid var(--line);border-radius:20px;overflow:hidden;
+    background:linear-gradient(135deg,#141a23,#10141b);
+    display:grid;grid-template-columns:1.1fr .9fr;
+  }
+  @media(max-width:820px){ .dataset-cta{grid-template-columns:1fr;} }
+  .dataset-cta .left{padding:44px;border-right:1px solid var(--line-soft);}
+  @media(max-width:820px){ .dataset-cta .left{border-right:0;border-bottom:1px solid var(--line-soft);} }
+  .dataset-cta h3{margin:14px 0 12px;font-size:30px;font-weight:600;letter-spacing:-.025em;}
+  .dataset-cta p{color:var(--ink-2);font-size:15px;margin:0 0 26px;max-width:420px;}
+  .meta-rows{display:flex;flex-direction:column;gap:0;margin-bottom:28px;}
+  .meta-rows .r{display:flex;justify-content:space-between;padding:11px 0;border-top:1px solid var(--line-soft);font-size:14px;}
+  .meta-rows .r .k{color:var(--muted);font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;}
+  .meta-rows .r .v{color:var(--ink);font-weight:500;}
+  .dataset-cta .right{padding:44px;display:flex;flex-direction:column;justify-content:center;gap:14px;}
+  .tier{display:flex;align-items:center;gap:14px;padding:16px 18px;border:1px solid var(--line-soft);border-radius:12px;background:var(--card);}
+  .tier .badge{width:10px;height:10px;border-radius:50%;flex:none;}
+  .tier .t{font-weight:600;font-size:15px;}
+  .tier .d{color:var(--muted);font-size:13px;}
+
+  /* paper */
+  .paper-row{display:grid;grid-template-columns:340px 1fr;gap:40px;align-items:center;}
+  @media(max-width:760px){ .paper-row{grid-template-columns:1fr;} }
+  .paper-thumb{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--card);transition:.28s;display:block;}
+  .paper-thumb:hover{transform:translateY(-4px);box-shadow:0 30px 60px -34px rgba(0,0,0,.85);border-color:var(--cyan);}
+
+  /* video */
+  .video-frame{position:relative;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#000;aspect-ratio:16/9;}
+  .video-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+
+  /* contact / footer */
+  footer{padding:64px 0 48px;background:var(--graphite);}
+  .foot-grid{display:flex;justify-content:space-between;align-items:flex-start;gap:40px;flex-wrap:wrap;}
+  .foot-brand{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+  .foot-brand .bmark{width:34px;height:34px;}
+  .foot-brand .bname{font-size:20px;font-weight:600;letter-spacing:-.02em;}
+  footer p{color:var(--muted);font-size:14px;max-width:380px;margin:0;}
+  footer a.link{color:var(--cyan);border-bottom:1px solid transparent;transition:.2s;}
+  footer a.link:hover{border-bottom-color:var(--cyan);}
+  .foot-links{display:flex;flex-direction:column;gap:11px;font-size:14px;}
+  .foot-links a{color:var(--ink-2);transition:.2s;}
+  .foot-links a:hover{color:var(--cyan);}
+  .foot-bottom{margin-top:46px;padding-top:24px;border-top:1px solid var(--line-soft);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--faint);letter-spacing:.08em;}
+
+  /* bibtex */
+  .bibtex{position:relative;border:1px solid var(--line);border-radius:14px;background:#0b0e13;overflow:hidden;}
+  .bibtex pre{margin:0;padding:26px 28px;overflow-x:auto;font-family:"IBM Plex Mono",monospace;font-size:13.5px;line-height:1.75;color:var(--ink-2);}
+  .bibtex pre .k{color:var(--cyan);} .bibtex pre .f{color:var(--orange);}
+  .copy-btn{position:absolute;top:14px;right:14px;display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--card);color:var(--ink-2);border-radius:8px;padding:7px 12px;font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.06em;cursor:pointer;transition:.2s;}
+  .copy-btn:hover{border-color:var(--cyan);color:var(--cyan);}
+  .copy-btn svg{width:14px;height:14px;}
+  .copy-btn.done{border-color:var(--cyan);color:var(--cyan);}
+
+  /* prose */
+  .prose{max-width:820px;}
+  .prose p{color:var(--ink-2);font-size:17px;line-height:1.8;margin:0 0 20px;}
+  .prose p:last-child{margin-bottom:0;}
+  .prose strong{color:var(--ink);font-weight:600;}
+  .prose .hl{color:var(--cyan);font-weight:600;}
+
+  /* method text cards */
+  .mcards{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:48px;}
+  @media(max-width:820px){ .mcards{grid-template-columns:1fr;} }
+  .mcard{border:1px solid var(--line);border-radius:16px;background:var(--card);padding:26px 24px;transition:.28s;}
+  .mcard:hover{transform:translateY(-4px);border-color:var(--faint);}
+  .mcard .ico{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(35,216,234,.1);border:1px solid rgba(35,216,234,.25);margin-bottom:18px;}
+  .mcard .ico svg{width:21px;height:21px;stroke:var(--cyan);}
+  .mcard h3{margin:0 0 9px;font-size:18px;font-weight:600;letter-spacing:-.01em;}
+  .mcard p{margin:0;color:var(--muted);font-size:14px;line-height:1.65;}
+
+  /* figure + prose two-col */
+  .figprose{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;margin-top:56px;}
+  @media(max-width:860px){ .figprose{grid-template-columns:1fr;gap:28px;} }
+  .figprose .prose p{font-size:15.5px;}
+
+  /* data tables */
+  .tbl-cap{font-size:14px;color:var(--ink-2);margin:0 0 14px;}
+  .tbl-cap strong{color:var(--cyan);}
+  .table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--card);}
+  table.tbl{width:100%;border-collapse:collapse;font-size:13.5px;min-width:520px;}
+  table.tbl th,table.tbl td{padding:12px 14px;text-align:center;border-bottom:1px solid var(--line-soft);white-space:nowrap;}
+  table.tbl thead th{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500;background:var(--graphite-2);}
+  table.tbl td.l,table.tbl th.l{text-align:left;}
+  table.tbl tbody tr:last-child td{border-bottom:0;}
+  table.tbl tr.ours{background:rgba(35,216,234,.07);}
+  table.tbl tr.ours td.l{color:var(--cyan);font-weight:600;}
+  table.tbl tr.delta td{color:var(--orange);font-family:"IBM Plex Mono",monospace;font-size:12px;}
+  table.tbl .yes{color:var(--cyan);font-weight:600;} table.tbl .no{color:var(--faint);}
+  table.tbl .best{color:var(--cyan);font-weight:700;}
+  .tbl-note{font-size:12.5px;color:var(--muted);line-height:1.65;margin:14px 0 0;}
+  .tbl-note code{font-family:"IBM Plex Mono",monospace;font-size:11.5px;background:var(--card-2);padding:2px 6px;border-radius:5px;color:var(--ink-2);}
+
+  /* tier / scene chip groups */
+  .grp-label{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 12px;}
+  .grp-label:not(:first-child){margin-top:24px;}
+  .chips{display:flex;flex-wrap:wrap;gap:9px;}
+  .chip{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line-soft);border-radius:999px;padding:8px 14px;font-size:13px;color:var(--ink);background:var(--card);}
+  .chip .dotc{width:8px;height:8px;border-radius:50%;flex:none;}
+  .tier-note{margin:18px 0 0;font-size:13px;color:var(--muted);line-height:1.6;}
+
+  /* reveal animation */
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1);}
+  .reveal.in{opacity:1;transform:none;}
+  @media(prefers-reduced-motion:reduce){ .reveal{opacity:1;transform:none;transition:none;} }
+
+  /* hero mark draw animation */
+  .draw .s-a,.draw .s-b{stroke-dasharray:170;stroke-dashoffset:170;animation:draw 1.5s cubic-bezier(.6,.05,.2,1) forwards;}
+  .draw .s-b{animation-delay:.18s;}
+  .draw .nodes *{opacity:0;animation:pop .4s ease forwards;}
+  .draw .center{opacity:0;animation:pop .5s ease .9s forwards;}
+  @keyframes draw{to{stroke-dashoffset:0;}}
+  @keyframes pop{from{opacity:0;transform:scale(.4);}to{opacity:1;transform:none;}}
+  @media(prefers-reduced-motion:reduce){ .draw .s-a,.draw .s-b{stroke-dashoffset:0;animation:none;} .draw .nodes *,.draw .center{opacity:1;animation:none;} }
+
+  svg .s-a,svg .s-b{fill:none;}
+  svg .s-a{stroke:var(--cyan);} svg .s-b{stroke:var(--orange);}
+  svg .n-a circle{fill:var(--graphite);stroke:var(--cyan);}
+  svg .n-b circle{fill:var(--graphite);stroke:var(--orange);}
+  svg .center{fill:var(--ink);}
+</style>
 </head>
 <body>
 
-  <!-- =============================================================== NAV -->
-  <nav class="nav" aria-label="Primary">
-    <div class="wrap">
-      <a href="#top" class="brand">Deform<span class="x">X</span></a>
-      <div class="nav-links">
-        <a class="navlink" href="#abstract">Abstract</a>
-        <a class="navlink" href="#method">Method</a>
-        <a class="navlink" href="#physics">Validation</a>
-        <a class="navlink" href="#dataset">Dataset</a>
-        <a class="navlink" href="#learning">Robot Learning</a>
-        <a class="navlink" href="#bibtex">BibTeX</a>
-      </div>
-      <div class="nav-cta">
-        <a class="btn btn-ghost btn-sm" href="#" data-link="code" aria-label="Code repository">
-          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.2.8-.5v-1.8c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 5 18.3 5.3 18.3 5.3c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.6.8.5 4.6-1.5 7.9-5.8 7.9-10.9C23.5 5.7 18.3.5 12 .5z"/></svg>
-          <span class="btn-label-long">Code</span>
-        </a>
-        <a class="btn btn-primary btn-sm" href="#" data-link="paper" aria-label="Read the paper">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg>
-          <span class="btn-label-long">Paper</span>
-        </a>
-      </div>
+<!-- ===================== NAV ===================== -->
+<nav id="nav">
+  <div class="wrap row">
+    <a class="brand" href="#top">
+      <svg class="bmark" viewBox="0 0 120 120" aria-hidden="true">
+        <g fill="none" stroke-linecap="round" stroke-width="9">
+          <path class="s-a" d="M24,22 C58,40 62,80 96,98"/><path class="s-b" d="M96,22 C62,40 58,80 24,98"/>
+        </g>
+        <rect class="center" x="54.2" y="54.2" width="11.6" height="11.6" rx="2" transform="rotate(45 60 60)"/>
+      </svg>
+      <span class="bname">DeformX</span>
+    </a>
+    <div class="navlinks">
+      <a href="#overview">Abstract</a>
+      <a href="#method">Method</a>
+      <a href="#physics">Validation</a>
+      <a href="#dataset">Dataset</a>
+      <a href="#learning">Robot Learning</a>
+      <a href="#bibtex">BibTeX</a>
+      <a class="ghbtn" href="https://github.com/DeformX/DeformX" target="_blank" rel="noopener">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub
+      </a>
     </div>
-  </nav>
+  </div>
+</nav>
 
-  <span id="top"></span>
+<a id="top"></a>
+<!-- ===================== HERO ===================== -->
+<header class="hero">
+  <div class="dots"></div>
+  <div class="glow"></div>
+  <div class="glow b"></div>
+  <div class="hero-inner">
+    <div class="pill"><span class="dot"></span>Deformable Linear Objects<span class="sep">/</span>Cosserat Rods<span class="sep">/</span>Sim-to-Real</div>
 
-  <!-- ============================================================== HERO -->
-  <header class="hero">
-    <svg class="hero-bg" preserveAspectRatio="none" viewBox="0 0 1440 520" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="wireGrad" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stop-color="#2f6df6" stop-opacity="0"/>
-          <stop offset="45%" stop-color="#2f6df6" stop-opacity=".55"/>
-          <stop offset="100%" stop-color="#06b6d4" stop-opacity="0"/>
-        </linearGradient>
-        <linearGradient id="wireGrad2" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stop-color="#06b6d4" stop-opacity="0"/>
-          <stop offset="50%" stop-color="#7c8cff" stop-opacity=".4"/>
-          <stop offset="100%" stop-color="#2f6df6" stop-opacity="0"/>
-        </linearGradient>
-      </defs>
-      <path class="wireA" d="M-40 150 C 280 40, 460 300, 760 170 S 1240 30, 1500 200" fill="none" stroke="url(#wireGrad)" stroke-width="2.5"/>
-      <path class="wireB" d="M-40 340 C 320 250, 520 470, 820 330 S 1220 230, 1500 380" fill="none" stroke="url(#wireGrad2)" stroke-width="2"/>
-    </svg>
+    <h1 class="hero-title">Deform<span class="xmark"><svg class="draw" viewBox="0 0 120 120" aria-label="X">
+      <g fill="none" stroke-linecap="round" stroke-width="11">
+        <path class="s-a" d="M24,22 C58,40 62,80 96,98"/><path class="s-b" d="M96,22 C62,40 58,80 24,98"/>
+      </g>
+    </svg></span></h1>
 
-    <div class="wrap hero-inner">
-      <span class="venue"><span class="dot"></span> Co-Simulation Framework&nbsp;·&nbsp;Deformable Linear Objects</span>
+    <p class="hero-tag">A Versatile Co-Simulation Framework for Deformable Linear Objects</p>
 
-      <h1>Deform<span class="grad">X</span>: A Versatile Co-Simulation Framework for Deformable Linear Objects</h1>
-      <p class="subtitle">Coupling a dedicated <b>Cosserat rod engine</b> with <b>NVIDIA Isaac&nbsp;Sim</b> for DLO simulation that is both <b>physically faithful</b> and <b>visually realistic</b> — built for perception and robot learning.</p>
-
-      <p class="authors">
-        <span class="author">Yi Yang<sup>1,3,4,†</sup></span>,
-        <span class="author">Xiang Fei<sup>1,†</sup></span>,
-        <span class="author">Lehong Wang<sup>1,†</sup></span>,
-        <span class="author">Chenhao Li<sup>2</sup></span>,
-        <span class="author">Zilin Dai<sup>5</sup></span>,
-        <span class="author">Henry Kou<sup>1</sup></span>,
-        <span class="author">Howie Choset<sup>1</sup></span>,
-        <span class="author">Lu Li<sup>1</sup></span>
-      </p>
-      <p class="affil">
-        <span class="a-item"><sup>1</sup>The Robotics Institute, Carnegie Mellon University</span> &nbsp;·&nbsp;
-        <span class="a-item"><sup>2</sup>Dept. of Mechanical Engineering, CMU</span> &nbsp;·&nbsp;
-        <span class="a-item"><sup>3</sup>Shanghai Jiao Tong University</span> &nbsp;·&nbsp;
-        <span class="a-item"><sup>4</sup>Zhiyuan College, SJTU</span> &nbsp;·&nbsp;
-        <span class="a-item"><sup>5</sup>Harvard University</span>
-      </p>
-      <p class="eq-note"><sup>†</sup>Equal contribution.</p>
-
-      <div class="hero-actions">
-        <a class="btn btn-primary" href="#" data-link="paper">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg>
-          Paper
-        </a>
-        <a class="btn btn-ghost" href="#" data-link="arxiv">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-          arXiv
-        </a>
-        <a class="btn btn-ghost" href="#" data-link="code">
-          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.2.8-.5v-1.8c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 5 18.3 5.3 18.3 5.3c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.6.8.5 4.6-1.5 7.9-5.8 7.9-10.9C23.5 5.7 18.3.5 12 .5z"/></svg>
-          Code
-        </a>
-        <a class="btn btn-ghost" href="#dataset" data-link="dataset">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5"/><path d="M3 12c0 1.7 4 3 9 3s9-1.3 9-3"/></svg>
-          WireSeg-32k
-        </a>
-      </div>
+    <div class="authors">
+      <a href="https://yiyang-23.github.io/" target="_blank" rel="noopener">Yi Yang</a><sup>1,3,4,*</sup>,
+      <a href="https://edgarfx.github.io/" target="_blank" rel="noopener">Xiang Fei</a><sup>1,*</sup>,
+      <a href="https://lehong-wang.github.io/" target="_blank" rel="noopener">Lehong Wang</a><sup>1,*</sup>,
+      <span class="noauth">Chenhao Li</span><sup>2</sup>,
+      <span class="noauth">Zilin Dai</span><sup>5</sup>,
+      <span class="noauth">Henry Kou</span><sup>1</sup>,
+      <span class="noauth">Lu Li</span><sup>1</sup>,
+      <a href="https://www.cs.cmu.edu/~choset/" target="_blank" rel="noopener">Howie Choset</a><sup>1</sup>
+    </div>
+    <div class="affil">
+      <sup>1</sup>The Robotics Institute, Carnegie Mellon University &nbsp;·&nbsp;
+      <sup>2</sup>Department of Mechanical Engineering, CMU &nbsp;·&nbsp;
+      <sup>3</sup>School of Ocean and Civil Engineering, SJTU &nbsp;·&nbsp;
+      <sup>4</sup>Zhiyuan College, SJTU &nbsp;·&nbsp;
+      <sup>5</sup>Harvard University
+      <br/><span class="star">*</span> Equal contribution
     </div>
 
-    <figure class="teaser wrap" data-zoom>
-      <img src="static/images/teaser.png" alt="Overview of DeformX: simulated vs. real wires (left), the co-simulation core coupling NVIDIA Isaac Sim with a Cosserat rod engine through CAD models of DLOs (center), and robot-learning rollouts of a rope-swinging task (right)." />
-      <figcaption class="cap"><b>DeformX</b> is a co-simulation framework for deformable linear objects (DLOs) that integrates NVIDIA Isaac Sim with a dedicated Cosserat rod engine, providing visually and physically realistic simulation. The framework enables scalable data generation and robot learning for DLO perception and manipulation.</figcaption>
+    <div class="actions">
+      <a class="btn primary" href="https://github.com/DeformX/DeformX" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        Code
+      </a>
+      <a class="btn ghost" href="#dataset">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Dataset
+      </a>
+    </div>
+
+    <div class="hero-figure reveal">
+      <div class="framewrap">
+        <span class="tick tl"></span><span class="tick tr"></span><span class="tick bl"></span><span class="tick br"></span>
+        <img src="assets/img/teaser.png" alt="DeformX framework overview" loading="lazy" style="object-fit: cover" />
+        <div class="figcap">Cosserat rod physics × Isaac Sim — dynamics, self-collision, and mesh-skinned rendering</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ===================== STAT STRIP ===================== -->
+<section class="stats">
+  <div class="wrap">
+    <div class="grid">
+      <div class="stat">
+        <div class="num" data-count="32000" data-suffix="">0</div>
+        <div class="lbl">Synthetic Images</div>
+        <div class="sub">WireSeg-32k · depth + instance masks</div>
+      </div>
+      <div class="stat">
+        <div class="num accent-cyan"><span data-count="10.2" data-dec="1">0</span><span class="u">% mAP@75</span></div>
+        <div class="lbl">Segmentation Gain</div>
+        <div class="sub">SAM3 + LoRA, real held-out test set</div>
+      </div>
+      <div class="stat">
+        <div class="num accent-orange"><span data-count="6.6" data-dec="1">0</span><span class="u">cm</span></div>
+        <div class="lbl">Real-Robot Error</div>
+        <div class="sub">UR5e rope-swing — vs. 15.1 cm baseline</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ABSTRACT ===================== -->
+<section class="block" id="overview">
+  <div class="wrap">
+    <div class="sechead reveal">
+      <span class="eyebrow accent-cyan">Abstract</span>
+      <h2>Visually realistic <em style="font-style:italic;color:var(--cyan)">and</em> physically faithful DLO simulation</h2>
+    </div>
+    <div class="prose reveal">
+      <p>Deformable linear objects (DLOs) such as wires, cables, and ropes are common in robotic manipulation tasks, yet simulating them with both visual realism and physical accuracy remains challenging. Existing visual methods rely on procedural geometric primitives that lack physically grounded deformation, while physics-based approaches often approximate DLOs as rigid-link chains or generic soft bodies — failing to capture the bending, twisting, and shear mechanics of slender elastic structures.</p>
+      <p>We introduce <strong>DeformX</strong>, a co-simulation framework that integrates a dedicated Cosserat rod physics engine with NVIDIA Isaac Sim, enabling DLO simulations that are both physically faithful and visually realistic. The Cosserat rod engine simulates the dynamics and self-collisions of DLOs, and contact interactions with arbitrary free-form meshes. For high-fidelity visualization, we employ <strong>mesh skinning</strong> to map discrete rod deformations onto imported CAD models — to our knowledge the first framework to unify realistic visualization, principled physics, and robot-learning compatibility.</p>
+      <p>We demonstrate its versatility across synthetic data generation and policy learning, and validate fidelity against real-world experiments. Fine-tuning <span class="hl">SAM3</span> on DeformX-generated data yields a <span class="hl">10.2% mAP@75 improvement</span> in real-image wire segmentation, and a rope-swinging policy trained entirely in DeformX achieves a mean target-hitting error of <span class="hl">6.6 cm</span> on a UR5e manipulator in the real world.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== METHOD ===================== -->
+<section class="block alt" id="method">
+  <div class="wrap">
+    <div class="sechead reveal">
+      <span class="eyebrow accent-cyan">Method</span>
+      <h2>A co-simulation framework that divides labor cleanly</h2>
+      <p>The Cosserat rod engine governs all DLO dynamics, self-collisions, and rod–mesh contact; Isaac Sim handles rigid bodies, robots, control, and photorealistic rendering. A multi-rate scheme keeps the two tightly and stably coupled across very different time scales.</p>
+    </div>
+
+    <figure class="figure reveal">
+      <img src="assets/img/system.png" alt="System overview comparing DeformX with existing vision and RL simulators" loading="lazy" />
+      <div class="cap">Compared with existing simulators for vision (left) and RL (right), DeformX jointly achieves <strong>visual realism</strong>, <strong>physical accuracy</strong>, <strong>DLO CAD support</strong>, and <strong>robot-learning support</strong> by combining Isaac Sim and a dedicated Cosserat rod engine.</div>
     </figure>
-  </header>
 
-  <!-- ========================================================== ABSTRACT -->
-  <section class="section" id="abstract">
-    <div class="wrap">
-      <div class="section-head">
-        <span class="eyebrow">Abstract</span>
-        <h2>Visually realistic <em>and</em> physically faithful DLO simulation</h2>
+    <div class="mcards">
+      <div class="mcard reveal">
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg></div>
+        <h3>Multi-rate co-simulation</h3>
+        <p>The rod engine replicates Isaac Sim's semi-implicit Euler integration to substep DLO dynamics at ~10⁻⁵ s within each ~10⁻² s Isaac step, then returns integrated impulses and wrenches for stable bidirectional coupling.</p>
       </div>
-      <div class="prose">
-        <p>Deformable linear objects (DLOs) such as wires, cables, and ropes are common in robotic manipulation tasks, yet simulating them with both visual realism and physical accuracy remains challenging. Existing visual simulation methods typically rely on procedural geometric primitives that lack physically grounded deformation behavior, while physics-based approaches with robot-learning support often approximate DLOs as rigid-link chains or generic soft bodies — failing to accurately capture the bending, twisting, and shear mechanics of slender elastic structures.</p>
-        <p>In this work, we introduce <b>DeformX</b>, a co-simulation framework that integrates a dedicated Cosserat rod physics engine with NVIDIA Isaac Sim, enabling DLO simulations that are both physically faithful and visually realistic. Our Cosserat rod engine simulates the dynamics and self-collisions of DLOs, and contact interactions with arbitrary free-form meshes. To achieve high-fidelity visualization, we employ <b>mesh skinning</b> to map discrete rod deformations onto imported CAD models. To the best of our knowledge, DeformX is the first framework for DLO simulation that unifies realistic visualization, principled physics, and compatibility with robot-learning pipelines.</p>
-        <p>We demonstrate its versatility across synthetic data generation and policy learning for DLO manipulation, and validate visual and physical fidelity through comparisons against real-world experiments. Notably, fine-tuning <b>SAM3</b> on DeformX-generated data yields a <b>10.2% mAP@75 improvement</b> in real-image wire segmentation, and a rope-swinging policy trained entirely in DeformX achieves a mean target-hitting error of <b>6.6&nbsp;cm</b> on a UR5e manipulator in real-world trials — highlighting strong sim-to-real transfer.</p>
+      <div class="mcard reveal">
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+        <h3>Free-form mesh contact</h3>
+        <p>Building on PyElastica's penalty contact, we add closest-point queries against arbitrary meshes — accelerated by a BVH and AABB broad-phase pruning, with a repulsion margin that prevents deep penetration under large time steps.</p>
       </div>
-    </div>
-  </section>
-
-  <!-- ========================================================= HIGHLIGHTS -->
-  <section class="section alt" id="highlights" aria-label="Key results">
-    <div class="wrap">
-      <div class="stats">
-        <div class="stat">
-          <div class="num">+10.2%</div>
-          <div class="lbl">mAP@75 gain on real wire segmentation after fine-tuning SAM3 on our data</div>
-        </div>
-        <div class="stat">
-          <div class="num">6.6 cm</div>
-          <div class="lbl">Real-world rope-swing tip error on a UR5e — down from 15.1 cm for the baseline</div>
-        </div>
-        <div class="stat">
-          <div class="num">32k</div>
-          <div class="lbl">Rendered images in WireSeg-32k, with instance masks &amp; per-pixel depth</div>
-        </div>
-        <div class="stat">
-          <div class="num">1<span style="font-size:1.2rem">st</span></div>
-          <div class="lbl">Unified DLO sim — visual realism, principled physics &amp; robot learning together</div>
-        </div>
+      <div class="mcard reveal">
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 00-1-1.7l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.7l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><path d="M3.3 7 12 12l8.7-5M12 22V12"/></svg></div>
+        <h3>Mesh-skinned visualization</h3>
+        <p>Discrete Cosserat rod deformations drive a skinned tubular mesh every Isaac step, so high-resolution CAD assets deform in full consistency with the underlying physics — CAD-quality, reusable DLO visuals.</p>
       </div>
     </div>
-  </section>
 
-  <!-- ============================================================ METHOD -->
-  <section class="section" id="method">
-    <div class="wrap">
-      <div class="section-head">
-        <span class="eyebrow">Method</span>
-        <h2>A co-simulation framework that divides labor cleanly</h2>
-        <p>The Cosserat rod engine governs all DLO dynamics, self-collisions, and rod–mesh contact; Isaac Sim handles rigid bodies, robots, control, and photorealistic rendering. A multi-rate scheme keeps the two tightly and stably coupled across very different time scales.</p>
-      </div>
-
-      <figure class="figure">
-        <div class="frame pad" data-zoom>
-          <img src="static/images/system.png" alt="System overview. Left: existing vision simulators use procedural Bezier curves or cylinders, lacking physics and CAD support. Center: our framework couples Isaac Sim (scene authoring, robot control, rendering) with a Cosserat rod engine (rod dynamics, rod-mesh contact) exchanging rod state and impulse/wrench at different time steps. Right: existing RL simulators use cylinder-and-ball-joint or soft-material approximations." loading="lazy" />
-        </div>
-        <figcaption class="cap">Compared with existing simulators for vision (left) and RL (right), DeformX jointly achieves <b>visual realism</b>, <b>physical accuracy</b>, <b>DLO CAD support</b>, and <b>robot-learning support</b> with minimal parameter tuning by combining Isaac Sim and a dedicated Cosserat rod engine.</figcaption>
+    <div class="figprose">
+      <figure class="figure reveal">
+        <img src="assets/img/cosserat.png" alt="Cosserat rod modeling: continuous rod, discrete rod, and skinned mesh" loading="lazy" />
+        <div class="cap"><strong>Cosserat rod modeling.</strong> (a) Continuous centerline and material frame; (b) discrete vertices and segment frames; (c) mesh skinned to the discrete rod.</div>
       </figure>
-
-      <div class="cards" style="margin-top:48px">
-        <div class="card">
-          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg></div>
-          <h3>Multi-rate co-simulation</h3>
-          <p>The rod engine replicates Isaac Sim's semi-implicit Euler integration to substep DLO dynamics at ~10⁻⁵ s within each ~10⁻² s Isaac step, then returns integrated impulses and wrenches for stable bidirectional coupling.</p>
-        </div>
-        <div class="card">
-          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
-          <h3>Free-form mesh contact</h3>
-          <p>Building on PyElastica's penalty contact, we add closest-point queries against arbitrary meshes — accelerated by a BVH and AABB broad-phase pruning, with a repulsion margin that prevents deep penetration under large time steps.</p>
-        </div>
-        <div class="card">
-          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.3 7 12 12l8.7-5M12 22V12"/></svg></div>
-          <h3>Mesh-skinned visualization</h3>
-          <p>Discrete Cosserat rod deformations drive a skinned tubular mesh every Isaac step, so high-resolution CAD assets deform in full consistency with the underlying physics — yielding CAD-quality, reusable DLO visuals.</p>
-        </div>
-      </div>
-
-      <div class="fig-grid two" style="margin-top:56px">
-        <figure class="figure">
-          <div class="frame pad" data-zoom>
-            <img src="static/images/cosserat.png" alt="Cosserat rod modeling: (a) continuous rod with centerline r(s,t) and material frame Q; (b) discrete rod with vertices and per-segment frames; (c) a mesh rigged to the discrete rod." loading="lazy" />
-          </div>
-          <figcaption class="cap"><b>Cosserat rod modeling of DLOs.</b> (a) Continuous representation with centerline and material frame; (b) discrete vertices and segment frames; (c) mesh skinned to the discrete rod for realistic visualization.</figcaption>
-        </figure>
-        <div class="prose" style="font-size:1.04rem">
-          <p>We model a DLO as a slender elastic rod under <b>Cosserat rod theory</b>, capturing all deformation modes of a 1-D continuum — stretching, shearing, bending, and twisting — in a unified formulation.</p>
-          <p>Dynamics follow conservation of linear and angular momentum, with material behavior set by physically meaningful parameters such as <b>Young's modulus</b> and <b>shear modulus</b>. This establishes a direct link between simulation behavior and real material properties, enabling principled calibration instead of heuristic joint-stiffness tuning.</p>
-          <p>The engine ships as a Python module embedded in Isaac Sim's scripting environment, supporting both interactive UI workflows and headless execution — a single pipeline from scene authoring to physics and photorealistic rendering.</p>
-        </div>
+      <div class="prose reveal">
+        <p>We model a DLO as a slender elastic rod under <strong>Cosserat rod theory</strong>, capturing all deformation modes of a 1-D continuum — stretching, shearing, bending, and twisting — in a unified formulation.</p>
+        <p>Material behavior is set by physically meaningful parameters such as <strong>Young's modulus</strong> and <strong>shear modulus</strong>, linking simulation directly to real material properties and enabling principled calibration instead of heuristic joint-stiffness tuning.</p>
+        <p>The engine ships as a Python module embedded in Isaac Sim's scripting environment, supporting both interactive UI workflows and headless execution.</p>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- ========================================================== PHYSICS -->
-  <section class="section alt" id="physics">
-    <div class="wrap">
-      <div class="section-head">
-        <span class="eyebrow">Physical Validation</span>
-        <h2>Sim matches reality — knots, twist, and free-form contact</h2>
-        <p>We validate physical fidelity with two real-world experiments whose parameters come from factory material specifications, not manual tuning.</p>
-      </div>
-
-      <figure class="figure">
-        <div class="frame" data-zoom>
-          <img src="static/images/sim2real.jpg" alt="(a) A trefoil knot tied on a wire and continuously twisted; simulation (top) reproduces the same shape transitions seen in real experiments (bottom). (b) A flexible rope (scarf) wrapped around a rigid Stanford bunny, showing multi-point contact, sliding, and self-contact in both real and simulated rollouts." loading="lazy" />
-        </div>
-        <figcaption class="cap"><b>Sim-to-real comparison.</b> (a) A <b>trefoil knot</b> under continuous twist undergoes the same qualitative shape transitions in simulation and reality. (b) A flexible rope wrapping a rigid <b>bunny</b> exhibits multi-point contact, sliding, and self-contact — conforming to the geometry with stable, interpenetration-free behavior.</figcaption>
-      </figure>
+<!-- ===================== VALIDATION ===================== -->
+<section class="block" id="physics">
+  <div class="wrap">
+    <div class="sechead reveal">
+      <span class="eyebrow accent-cyan">Physical Validation</span>
+      <h2>Sim matches reality — knots, twist, and free-form contact</h2>
+      <p>We validate physical fidelity with two real-world experiments whose parameters come from factory material specifications, not manual tuning.</p>
     </div>
-  </section>
-
-  <!-- ========================================================== DATASET -->
-  <section class="section" id="dataset">
-    <div class="wrap">
-      <div class="section-head">
-        <span class="eyebrow">Application · Data Generation</span>
-        <h2>WireSeg-32k — a wire instance segmentation dataset</h2>
-        <p>Using the framework, we generate <b>32,000 rendered images</b> across 300+ independent simulation runs, with per-wire instance masks, per-pixel depth, and easy / medium / hard difficulty tiers across three scenario categories: <b>wire-on-plane</b>, <b>flying wires</b>, and <b>data center</b>.</p>
+    <figure class="figure reveal">
+      <img src="assets/img/sim2real.jpg" alt="Trefoil knot under twist and a rope wrapping the Stanford bunny, sim vs real" loading="lazy" />
+      <div class="cap"><strong>Sim-to-real comparison.</strong> (a) A <strong>trefoil knot</strong> under continuous twist undergoes the same qualitative shape transitions in simulation and reality. (b) A flexible rope wrapping a rigid <strong>bunny</strong> exhibits multi-point contact, sliding, and self-contact — conforming to the geometry with stable, interpenetration-free behavior.</div>
+    </figure>
+    <figure class="figure reveal" style="margin-top:24px">
+      <div class="vplayer">
+        <video class="vmedia" src="assets/videos/wire_twisting.mp4#t=2" preload="metadata" muted playsinline></video>
+        <span class="corner tl"></span><span class="corner br"></span>
+        <div class="vplay"><span class="ring"><svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg></span></div>
       </div>
+      <div class="cap"><strong>Knot &amp; twist (video).</strong> Live capture of the trefoil knot tightening as twist accumulates — the simulated Cosserat rod reproduces the same buckling and shape transitions.</div>
+    </figure>
+  </div>
+</section>
 
-      <figure class="figure">
-        <div class="frame pad" data-zoom>
-          <img src="static/images/pipeline.png" alt="Data generation pipeline: an asset library (CAD/3D assets, materials, HDRI maps) and scene authoring feed random sampling of wire count, shape and placement; the Cosserat rod engine simulates wire dynamics and contact; a rendering module performs skeleton-driven wire rendering and domain randomization; outputs are RGB, ground-truth masks and depth, then split by difficulty." loading="lazy" />
-        </div>
-        <figcaption class="cap"><b>Generation pipeline.</b> Randomized scenes are built from asset libraries; wires are simulated with the Cosserat rod engine and visualized as skinned meshes. RGB images, segmentation masks, and depth maps are rendered with domain randomization, then split by difficulty.</figcaption>
+<!-- ===================== DATASET ===================== -->
+<section class="block alt" id="dataset">
+  <div class="wrap">
+    <div class="sechead reveal">
+      <span class="eyebrow accent-orange">Application · Data Generation</span>
+      <h2>WireSeg-32k — a wire instance segmentation dataset</h2>
+      <p>Using the framework, we generate <strong>32,000 rendered images</strong> across 300+ independent simulation runs, with per-wire instance masks, per-pixel depth, and easy / medium / hard difficulty tiers across three scenario categories: wire-on-plane, flying wires, and data center.</p>
+    </div>
+
+    <figure class="figure reveal">
+      <img src="assets/img/pipeline.png" alt="WireSeg-32k data generation pipeline" loading="lazy" />
+      <div class="cap"><strong>Generation pipeline.</strong> Randomized scenes are built from asset libraries; wires are simulated with the Cosserat rod engine and visualized as skinned meshes. RGB images, segmentation masks, and depth maps are rendered with domain randomization, then split by difficulty.</div>
+    </figure>
+    <figure class="figure reveal" style="margin-top:24px">
+      <div class="vplayer">
+        <video class="vmedia" src="assets/videos/wireseg32k.mp4#t=2" preload="metadata" muted playsinline></video>
+        <span class="corner tl"></span><span class="corner br"></span>
+        <div class="vplay"><span class="ring"><svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg></span></div>
+      </div>
+      <div class="cap"><strong>WireSeg-32k generation (video).</strong> Synthetic wire-segmentation scenes rendered across the three scene families and difficulty tiers.</div>
+    </figure>
+
+    <div class="figprose" style="align-items:start">
+      <figure class="figure reveal">
+        <img src="assets/img/dataset.jpg" alt="Representative WireSeg-32k images across settings and difficulty tiers" loading="lazy" />
+        <div class="cap">Representative images across the three settings and Easy / Medium / Hard tiers, with Hard ground-truth instance masks.</div>
       </figure>
-
-      <div class="fig-grid two" style="margin-top:48px">
-        <figure class="figure">
-          <div class="frame" data-zoom>
-            <img src="static/images/dataset.jpg" alt="Representative dataset images across the three settings (wire-on-plane, flying wires, data center) and a real column, organized by Easy, Medium, and Hard rows, with colored ground-truth instance masks for the Hard tier." loading="lazy" />
-          </div>
-          <figcaption class="cap">Representative images across the three settings and Easy / Medium / Hard tiers, with Hard ground-truth instance masks.</figcaption>
-        </figure>
-
-        <div>
-          <p class="tbl-cap"><b>Table 1.</b> WireSeg-32k versus existing DLO datasets.</p>
-          <div class="table-wrap">
-            <table class="tbl">
-              <thead>
-                <tr>
-                  <th class="l">Dataset</th>
-                  <th>Physics<br>Realism</th>
-                  <th>Instance<br>Label</th>
-                  <th>CAD<br>Support</th>
-                  <th>Visually-<br>grounded</th>
-                  <th>Images</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr><td class="l">HANDLOOM</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td><td>30k</td></tr>
-                <tr><td class="l">FASTDLO</td><td class="no">✗</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td><td>32k</td></tr>
-                <tr><td class="l">Fresnillo et al.</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td><td class="yes">✓</td><td>25k</td></tr>
-                <tr><td class="l">Zanella et al.</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td><td>28.5k</td></tr>
-                <tr><td class="l">ISCUTE</td><td class="no">✗</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td>28k</td></tr>
-                <tr class="ours"><td class="l">WireSeg-32k <b>(Ours)</b></td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td>32k</td></tr>
-              </tbody>
-            </table>
-          </div>
-          <p class="tbl-note">“Physics realism”: physics-based DLO deformation during generation. “Instance label”: per-object masks. “CAD support”: DLOs as free-form meshes. “Visually grounded”: rendered in realistic image-based backgrounds.</p>
-        </div>
-      </div>
-
-      <div style="margin-top:56px">
-        <p class="tbl-cap"><b>Table 2.</b> Fine-tuning SAM3 on WireSeg-32k. We report dataset-level F1@75 and COCO-style mAP@75 (higher is better) across difficulty tiers, the full synthetic set, and a held-out real test set.</p>
+      <div class="reveal">
+        <p class="tbl-cap"><strong>Table 1.</strong> WireSeg-32k versus existing DLO datasets.</p>
         <div class="table-wrap">
           <table class="tbl">
-            <thead>
-              <tr>
-                <th class="l" rowspan="2">Model</th>
-                <th colspan="2">Hard (Syn)</th>
-                <th colspan="2">Medium (Syn)</th>
-                <th colspan="2">Easy (Syn)</th>
-                <th colspan="2">Total (Syn)</th>
-                <th colspan="2">Total (Real)</th>
-              </tr>
-              <tr>
-                <th>F1@75</th><th>mAP@75</th>
-                <th>F1@75</th><th>mAP@75</th>
-                <th>F1@75</th><th>mAP@75</th>
-                <th>F1@75</th><th>mAP@75</th>
-                <th>F1@75</th><th>mAP@75</th>
-              </tr>
-            </thead>
+            <thead><tr><th class="l">Dataset</th><th>Physics</th><th>Instance</th><th>CAD</th><th>Grounded</th><th>Images</th></tr></thead>
             <tbody>
-              <tr>
-                <td class="l">SAM3 (Base)</td>
-                <td>0.179</td><td>0.066</td>
-                <td>0.446</td><td>0.310</td>
-                <td>0.803</td><td>0.735</td>
-                <td>0.409</td><td>0.290</td>
-                <td>0.296</td><td>0.157</td>
-              </tr>
-              <tr class="ours">
-                <td class="l">SAM3 + LoRA</td>
-                <td>0.225</td><td>0.102</td>
-                <td>0.512</td><td>0.404</td>
-                <td>0.850</td><td>0.816</td>
-                <td>0.465</td><td>0.365</td>
-                <td>0.314</td><td class="best">0.173</td>
-              </tr>
-              <tr class="delta">
-                <td class="l">Δ (LoRA − Base)</td>
-                <td>+25.7%</td><td>+54.5%</td>
-                <td>+14.8%</td><td>+30.3%</td>
-                <td>+5.9%</td><td>+11.0%</td>
-                <td>+13.7%</td><td>+25.7%</td>
-                <td>+6.1%</td><td>+10.2%</td>
-              </tr>
+              <tr><td class="l">HANDLOOM</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td><td>30k</td></tr>
+              <tr><td class="l">FASTDLO</td><td class="no">✗</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td><td>32k</td></tr>
+              <tr><td class="l">Fresnillo et al.</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td><td class="yes">✓</td><td>25k</td></tr>
+              <tr><td class="l">Zanella et al.</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td><td>28.5k</td></tr>
+              <tr><td class="l">ISCUTE</td><td class="no">✗</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td>28k</td></tr>
+              <tr class="ours"><td class="l">WireSeg-32k (Ours)</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td>32k</td></tr>
             </tbody>
           </table>
         </div>
-        <p class="tbl-note">Off-the-shelf SAM3 is run in text-prompt mode with the prompt <code>“cable”</code>. LoRA adapters (rank 16, α=32) are inserted into the attention projections; 5 epochs, lr 1×10⁻⁵, effective batch size 16. A complementary set of <b>300 in-the-wild real images</b> with manual annotations is used for the real-world evaluation.</p>
+        <p class="tbl-note">“Physics”: physics-based deformation during generation. “Instance”: per-object masks. “CAD”: DLOs as free-form meshes. “Grounded”: rendered in realistic image-based backgrounds.</p>
       </div>
     </div>
-  </section>
 
-  <!-- ========================================================= LEARNING -->
-  <section class="section alt" id="learning">
-    <div class="wrap">
-      <div class="section-head">
-        <span class="eyebrow">Application · Robot Learning</span>
-        <h2>Dynamic rope swinging that transfers to a real UR5e</h2>
-        <p>Dynamic “whipping” amplifies modeling error: small inaccuracies in bending, torsion, and contact cause large tip-trajectory deviations. We use a planar hit-target rope-swinging benchmark to stress-test sim-to-real transfer, training PPO with everything fixed except the DLO backend.</p>
+    <div class="reveal" style="margin-top:48px">
+      <p class="tbl-cap"><strong>Table 2.</strong> Fine-tuning SAM3 on WireSeg-32k — F1@75 and COCO-style mAP@75 (higher is better) across difficulty tiers, the full synthetic set, and a held-out real test set.</p>
+      <div class="table-wrap">
+        <table class="tbl">
+          <thead>
+            <tr><th class="l" rowspan="2">Model</th><th colspan="2">Hard (Syn)</th><th colspan="2">Medium (Syn)</th><th colspan="2">Easy (Syn)</th><th colspan="2">Total (Syn)</th><th colspan="2">Total (Real)</th></tr>
+            <tr><th>F1@75</th><th>mAP@75</th><th>F1@75</th><th>mAP@75</th><th>F1@75</th><th>mAP@75</th><th>F1@75</th><th>mAP@75</th><th>F1@75</th><th>mAP@75</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="l">SAM3 (Base)</td><td>0.179</td><td>0.066</td><td>0.446</td><td>0.310</td><td>0.803</td><td>0.735</td><td>0.409</td><td>0.290</td><td>0.296</td><td>0.157</td></tr>
+            <tr class="ours"><td class="l">SAM3 + LoRA</td><td>0.225</td><td>0.102</td><td>0.512</td><td>0.404</td><td>0.850</td><td>0.816</td><td>0.465</td><td>0.365</td><td>0.314</td><td class="best">0.173</td></tr>
+            <tr class="delta"><td class="l">Δ (LoRA − Base)</td><td>+25.7%</td><td>+54.5%</td><td>+14.8%</td><td>+30.3%</td><td>+5.9%</td><td>+11.0%</td><td>+13.7%</td><td>+25.7%</td><td>+6.1%</td><td>+10.2%</td></tr>
+          </tbody>
+        </table>
       </div>
+      <p class="tbl-note">Off-the-shelf SAM3 runs in text-prompt mode with the prompt <code>"cable"</code>. LoRA adapters (rank 16, α=32) are inserted into the attention projections; 5 epochs, lr 1×10⁻⁵, batch size 16. A complementary set of <strong>300 in-the-wild real images</strong> with manual annotations is used for the real-world evaluation.</p>
+    </div>
 
-      <div class="fig-grid two" style="align-items:start">
-        <figure class="figure">
-          <div class="frame" data-zoom>
-            <img src="static/images/calibration.jpg" alt="(a) A robot-driven rope experiment: one end anchored to the ground, the other attached to a UR5e executing a sinusoidal trajectory, with time-stamped overlays at t = 3.5 s, 6.5 s and 11.8 s. (b) Trajectory error over time, where DeformX (Ours) stays low while the baseline spikes near t = 2.5 s." loading="lazy" />
-          </div>
-          <figcaption class="cap"><b>Parameter calibration.</b> Rope parameters are fit by replaying a motion-captured sinusoidal end-effector trajectory in simulation, minimizing per-marker trajectory error so both simulators start from a fair, calibrated baseline.</figcaption>
-        </figure>
-
-        <figure class="figure">
-          <div class="frame" data-zoom>
-            <img src="static/images/rl_demo.jpg" alt="Goal-conditioned dynamic manipulation. Left: simulation rollout with the rope tip tracing toward a star-marked goal. Right: real-world UR5e rollout reproducing the motion. Colored curves visualize the DLO configuration over time." loading="lazy" />
-          </div>
-          <figcaption class="cap"><b>Goal-conditioned rope swinging.</b> The learned policy reaches the star-marked goal. <i>Left:</i> simulation rollout. <i>Right:</i> real-world rollout. Colored curves show the DLO configuration over time.</figcaption>
-        </figure>
-      </div>
-
-      <div style="margin-top:48px">
-        <p class="tbl-cap"><b>Table 3.</b> Hit-target results — minimum tip-to-goal distance <em>d</em><sub>min</sub> (cm). Real-world results are mean ± std over <em>n</em> = 10 repeated executions per goal.</p>
-        <div class="table-wrap">
-          <table class="tbl">
-            <thead>
-              <tr>
-                <th class="l">Target Point</th>
-                <th class="l">Method</th>
-                <th>Sim <em>d</em><sub>min</sub></th>
-                <th>Real (<em>n</em>=10) <em>d</em><sub>min</sub></th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr class="grp"><td class="l" rowspan="2">(0, 200, 230)</td><td class="l">Baseline</td><td>4.9</td><td>15.1 ± 6.1</td></tr>
-              <tr class="ours"><td class="l">DeformX (Ours)</td><td>4.2</td><td><span class="best">6.6</span> ± 4.7</td></tr>
-
-              <tr class="grp"><td class="l" rowspan="2">(0, 200, 150)</td><td class="l">Baseline</td><td>4.4</td><td>25.9 ± 8.9</td></tr>
-              <tr class="ours"><td class="l">DeformX (Ours)</td><td>1.4</td><td><span class="best">7.3</span> ± 1.2</td></tr>
-
-              <tr class="grp"><td class="l" rowspan="2">(0, 170, 50)</td><td class="l">Baseline</td><td>4.3</td><td>30.4 ± 14.3</td></tr>
-              <tr class="ours"><td class="l">DeformX (Ours)</td><td>3.3</td><td><span class="best">5.8</span> ± 3.2</td></tr>
-            </tbody>
-          </table>
+    <div class="dataset-cta reveal" style="margin-top:56px">
+      <div class="left">
+        <span class="eyebrow accent-cyan">Open Release</span>
+        <h3>Download WireSeg-32k</h3>
+        <p>Per-wire instance masks and per-pixel depth, generated entirely in DeformX.</p>
+        <div class="meta-rows">
+          <div class="r"><span class="k">Rendered images</span><span class="v">32,000</span></div>
+          <div class="r"><span class="k">Labels</span><span class="v">Instance masks + depth</span></div>
+          <div class="r"><span class="k">Sim runs</span><span class="v">300+ independent</span></div>
+          <div class="r"><span class="k">Real test set</span><span class="v">300 annotated images</span></div>
         </div>
-        <p class="tbl-note">Both simulators achieve low in-sim error, but only DeformX transfers reliably to the real robot — evidence that physically accurate bending, torsion, and contact are critical for sim-to-real transfer in dynamic rope swinging.</p>
+        <div class="actions" style="margin-top:0;justify-content:flex-start;">
+          <a class="btn primary" href="https://github.com/DeformX/DeformX" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download Dataset</a>
+          <a class="btn ghost" href="https://github.com/DeformX/DeformX" target="_blank" rel="noopener">Documentation</a>
+        </div>
+      </div>
+      <div class="right">
+        <p class="grp-label">Scene families</p>
+        <div class="chips">
+          <span class="chip"><span class="dotc" style="background:var(--cyan)"></span>Wire-on-plane</span>
+          <span class="chip"><span class="dotc" style="background:var(--orange)"></span>Flying wires</span>
+          <span class="chip"><span class="dotc" style="background:#E0566A"></span>Data center</span>
+        </div>
+        <p class="grp-label">Difficulty tiers</p>
+        <div class="chips">
+          <span class="chip">Easy</span><span class="chip">Medium</span><span class="chip">Hard</span>
+        </div>
+        <p class="tier-note">Difficulty is assigned per image from wire count, occlusion, and clutter — independent of the scene family.</p>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- =========================================================== BIBTEX -->
-  <section class="section" id="bibtex">
-    <div class="wrap">
-      <div class="section-head">
-        <span class="eyebrow">Citation</span>
-        <h2>BibTeX</h2>
+<!-- ===================== ROBOT LEARNING ===================== -->
+<section class="block" id="learning">
+  <div class="wrap">
+    <div class="sechead reveal">
+      <span class="eyebrow accent-cyan">Application · Robot Learning</span>
+      <h2>Dynamic rope swinging that transfers to a real UR5e</h2>
+      <p>Dynamic “whipping” amplifies modeling error: small inaccuracies in bending, torsion, and contact cause large tip-trajectory deviations. We use a planar hit-target rope-swinging benchmark to stress-test sim-to-real transfer, training PPO with everything fixed except the DLO backend.</p>
+    </div>
+    <figure class="figure reveal">
+      <img src="assets/img/calibration.jpg" alt="Robot-driven rope calibration and trajectory error over time" loading="lazy" />
+      <div class="cap"><strong>Parameter calibration.</strong> Rope parameters are fit by replaying a motion-captured sinusoidal end-effector trajectory, minimizing per-marker error so both simulators start from a fair, calibrated baseline.</div>
+    </figure>
+    <figure class="figure reveal" style="margin-top:24px">
+      <div class="vplayer">
+        <video class="vmedia" src="assets/videos/rope_para_tuning.mp4#t=2" preload="metadata" muted playsinline></video>
+        <span class="corner tl"></span><span class="corner br"></span>
+        <div class="vplay"><span class="ring"><svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg></span></div>
       </div>
-      <div class="bibtex">
-        <button class="copy-btn" id="copyBib" aria-label="Copy BibTeX to clipboard">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-          <span id="copyTxt">Copy</span>
-        </button>
+      <div class="cap"><strong>Calibration (video).</strong> Replaying the mocap trajectory in DeformX — the simulated rope tracks the real motion that the calibration is fit against.</div>
+    </figure>
+    <figure class="figure reveal" style="margin-top:24px">
+      <img src="assets/img/rl_demo.jpg" alt="Goal-conditioned rope swinging in sim and on the real UR5e" loading="lazy" />
+      <div class="cap"><strong>Goal-conditioned rope swinging.</strong> The learned policy reaches the star-marked goal in simulation (left) and on the real UR5e (right). Colored curves show the DLO configuration over time.</div>
+    </figure>
+    <figure class="figure reveal" style="margin-top:24px">
+      <div class="vplayer">
+        <video class="vmedia" src="assets/videos/wire_swing.mp4#t=2" preload="metadata" muted playsinline></video>
+        <span class="corner tl"></span><span class="corner br"></span>
+        <div class="vplay"><span class="ring"><svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg></span></div>
+      </div>
+      <div class="cap"><strong>Dynamic rope swinging (video).</strong> Cosserat rod dynamics under fast whipping motion — the regime where small modeling errors blow up tip trajectories.</div>
+    </figure>
+    <div class="reveal" style="margin-top:48px">
+      <p class="tbl-cap"><strong>Table 3.</strong> Hit-target results — minimum tip-to-goal distance d<sub>min</sub> (cm). Real-world results are mean ± std over n = 10 executions per goal.</p>
+      <div class="table-wrap">
+        <table class="tbl">
+          <thead><tr><th class="l">Target Point</th><th class="l">Method</th><th>Sim d<sub>min</sub></th><th>Real (n=10) d<sub>min</sub></th></tr></thead>
+          <tbody>
+            <tr><td class="l" rowspan="2">(0, 200, 230)</td><td class="l">Baseline</td><td>4.9</td><td>15.1 ± 6.1</td></tr>
+            <tr class="ours"><td class="l">DeformX (Ours)</td><td>4.2</td><td><span class="best">6.6</span> ± 4.7</td></tr>
+            <tr><td class="l" rowspan="2">(0, 200, 150)</td><td class="l">Baseline</td><td>4.4</td><td>25.9 ± 8.9</td></tr>
+            <tr class="ours"><td class="l">DeformX (Ours)</td><td>1.4</td><td><span class="best">7.3</span> ± 1.2</td></tr>
+            <tr><td class="l" rowspan="2">(0, 170, 50)</td><td class="l">Baseline</td><td>4.3</td><td>30.4 ± 14.3</td></tr>
+            <tr class="ours"><td class="l">DeformX (Ours)</td><td>3.3</td><td><span class="best">5.8</span> ± 3.2</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="tbl-note">Both simulators achieve low in-sim error, but only DeformX transfers reliably to the real robot — evidence that physically accurate bending, torsion, and contact are critical for sim-to-real transfer in dynamic rope swinging.</p>
+    </div>
+    <figure class="figure reveal" style="margin-top:48px">
+      <div class="vplayer">
+        <video class="vmedia" src="assets/videos/hit_apple.mp4#t=2" preload="metadata" muted playsinline></video>
+        <span class="corner tl"></span><span class="corner br"></span>
+        <div class="vplay"><span class="ring"><svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg></span></div>
+      </div>
+      <div class="cap"><strong>Real-world hit-target (video).</strong> A goal-conditioned policy trained entirely in DeformX swings the rope to strike the target on a real UR5e — zero-shot sim-to-real, no real-world fine-tuning.</div>
+    </figure>
+  </div>
+</section>
+
+<!-- ===================== BIBTEX ===================== -->
+<section class="block alt" id="bibtex">
+  <div class="wrap">
+    <div class="sechead reveal">
+      <span class="eyebrow accent-cyan">Citation</span>
+      <h2>BibTeX</h2>
+    </div>
+    <div class="bibtex reveal">
+      <button class="copy-btn" id="copyBib" aria-label="Copy BibTeX">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        <span id="copyTxt">Copy</span>
+      </button>
 <pre id="bibContent"><span class="k">@misc</span>{yang2026deformx,
   <span class="f">title</span>  = {DeformX: A Versatile Co-Simulation Framework for
             Deformable Linear Objects},
   <span class="f">author</span> = {Yang, Yi and Fei, Xiang and Wang, Lehong and Li, Chenhao
-            and Dai, Zilin and Kou, Henry and Choset, Howie and Li, Lu},
+            and Dai, Zilin and Kou, Henry and Li, Lu and Choset, Howie},
   <span class="f">note</span>   = {Preprint. Under review},
   <span class="f">year</span>   = {2026}
 }</pre>
-      </div>
     </div>
-  </section>
-
-  <!-- =========================================================== FOOTER -->
-  <footer class="footer">
-    <div class="wrap">
-      <div class="affils">
-        <h3>Affiliations</h3>
-        <p>
-          <sup>1</sup>The Robotics Institute, Carnegie Mellon University ·
-          <sup>2</sup>Department of Mechanical Engineering, Carnegie Mellon University ·
-          <sup>3</sup>School of Ocean and Civil Engineering, Shanghai Jiao Tong University ·
-          <sup>4</sup>Zhiyuan College, Shanghai Jiao Tong University ·
-          <sup>5</sup>John A. Paulson School of Engineering and Applied Sciences, Harvard University
-        </p>
-      </div>
-      <div class="ack">
-        <h3>Acknowledgment</h3>
-        <p>Generative AI tools were used for language refinement and code assistance; all content was reviewed, validated, and integrated by the authors, who take full responsibility for the originality and correctness of this work.</p>
-        <p style="margin-top:10px; color:var(--faint)">Page template &amp; figures © the authors. Built for the DeformX project.</p>
-      </div>
-    </div>
-  </footer>
-
-  <!-- =========================================================== LIGHTBOX -->
-  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Enlarged figure">
-    <button class="close" id="lbClose" aria-label="Close">&times;</button>
-    <img id="lbImg" src="" alt="" />
   </div>
+</section>
 
-  <script src="static/js/main.js"></script>
+<!-- ===================== FOOTER ===================== -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div style="max-width:420px;">
+        <div class="foot-brand">
+          <svg class="bmark" viewBox="0 0 120 120" aria-hidden="true">
+            <g fill="none" stroke-linecap="round" stroke-width="9">
+              <path class="s-a" d="M24,22 C58,40 62,80 96,98"/><path class="s-b" d="M96,22 C62,40 58,80 24,98"/>
+            </g>
+            <g class="n-a" stroke-width="3"><circle cx="24" cy="22" r="4.4"/><circle cx="96" cy="98" r="4.4"/></g>
+            <g class="n-b" stroke-width="3"><circle cx="96" cy="22" r="4.4"/><circle cx="24" cy="98" r="4.4"/></g>
+            <rect class="center" x="54.2" y="54.2" width="11.6" height="11.6" rx="2" transform="rotate(45 60 60)"/>
+          </svg>
+          <span class="bname">DeformX</span>
+        </div>
+        <p>A versatile co-simulation framework for deformable linear objects. Supported by the Biorobotics Lab at Carnegie Mellon University Robotics Institute.</p>
+        <p style="margin-top:16px;">Contact <a class="link" href="mailto:yy6@andrew.cmu.edu">Yi Yang</a> — <span class="mono" style="font-size:13px;">yy6@andrew.cmu.edu</span></p>
+      </div>
+      <div class="foot-links">
+        <a href="https://www.youtube.com/watch?v=CQvS8lQYSS8" target="_blank" rel="noopener">Video</a>
+        <a href="https://github.com/DeformX/DeformX" target="_blank" rel="noopener">Code &amp; Dataset</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 DeformX · The Robotics Institute, Carnegie Mellon University</span>
+      <span>Cosserat rods · Isaac Sim · Synthetic data · Sim-to-real</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // nav shadow on scroll
+  const nav = document.getElementById('nav');
+  addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 8), {passive:true});
+
+  // reveal on scroll
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, {threshold:.12, rootMargin:'0px 0px -8% 0px'});
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  // count-up stats
+  function countUp(el){
+    const target = parseFloat(el.dataset.count);
+    const dec = parseInt(el.dataset.dec || '0', 10);
+    const dur = 1500; const start = performance.now();
+    const fmt = (v) => dec>0 ? v.toFixed(dec) : Math.round(v).toLocaleString('en-US');
+    function tick(now){
+      const p = Math.min((now-start)/dur, 1);
+      const eased = 1 - Math.pow(1-p, 3);
+      el.textContent = fmt(target*eased);
+      if (p<1) requestAnimationFrame(tick);
+      else el.textContent = fmt(target);
+    }
+    requestAnimationFrame(tick);
+  }
+  const statIO = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting){ countUp(e.target); statIO.unobserve(e.target); } });
+  }, {threshold:.6});
+  document.querySelectorAll('[data-count]').forEach(el => statIO.observe(el));
+
+  // copy bibtex
+  const copyBtn = document.getElementById('copyBib');
+  if (copyBtn){
+    copyBtn.addEventListener('click', () => {
+      const txt = document.getElementById('bibContent').innerText;
+      navigator.clipboard.writeText(txt).then(() => {
+        copyBtn.classList.add('done');
+        document.getElementById('copyTxt').textContent = 'Copied';
+        setTimeout(() => { copyBtn.classList.remove('done'); document.getElementById('copyTxt').textContent = 'Copy'; }, 1800);
+      });
+    });
+  }
+
+  // click-to-play videos (first frame shown via #t fragment; click to play with sound + controls)
+  document.querySelectorAll('.vplayer').forEach(p => {
+    const btn = p.querySelector('.vplay');
+    const v = p.querySelector('.vmedia');
+    if (!btn || !v) return;
+    btn.addEventListener('click', () => {
+      v.controls = true;
+      v.play().catch(()=>{});
+      btn.remove();
+    });
+  });
+</script>
 </body>
 </html>
