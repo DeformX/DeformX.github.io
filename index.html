@@ -308,13 +308,14 @@
 
   /* figure + prose two-col */
   .figprose{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;margin-top:56px;}
+  .figprose > *{min-width:0;}
   @media(max-width:860px){ .figprose{grid-template-columns:1fr;gap:28px;} }
   .figprose .prose p{font-size:15.5px;}
 
   /* data tables */
   .tbl-cap{font-size:14px;color:var(--ink-2);margin:0 0 14px;}
   .tbl-cap strong{color:var(--cyan);}
-  .table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--card);}
+  .table-wrap{max-width:100%;overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--card);}
   table.tbl{width:100%;border-collapse:collapse;font-size:13.5px;min-width:520px;}
   table.tbl th,table.tbl td{padding:12px 14px;text-align:center;border-bottom:1px solid var(--line-soft);white-space:nowrap;}
   table.tbl thead th{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500;background:var(--graphite-2);}
