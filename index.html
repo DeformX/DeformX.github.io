@@ -226,6 +226,10 @@
   .vplay .ring{width:66px;height:66px;border-radius:50%;background:rgba(35,216,234,.92);display:flex;align-items:center;justify-content:center;box-shadow:0 12px 40px -8px rgba(35,216,234,.5);transition:transform .25s;}
   .vplay:hover .ring{transform:scale(1.08);}
   .vplay .ring svg{width:24px;height:24px;margin-left:3px;fill:#04161a;}
+  .video-fallback{position:absolute;inset:0;z-index:4;display:none;align-items:center;justify-content:center;padding:24px;background:#070a0f;color:var(--ink-2);text-align:center;font-size:14px;line-height:1.6;}
+  .video-fallback a{color:var(--cyan);border-bottom:1px solid currentColor;}
+  .vplayer.video-error .video-fallback{display:flex;}
+  .vplayer.video-error .vplay{display:none;}
   .vcard .vbody{padding:18px 22px 20px;display:flex;align-items:baseline;justify-content:space-between;gap:14px;}
   .vcard .vbody .vt{font-size:16px;font-weight:600;letter-spacing:-.01em;}
   .vcard .vbody .vx{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.12em;color:var(--cyan);text-transform:uppercase;flex:none;}
@@ -874,10 +878,20 @@
     const btn = p.querySelector('.vplay');
     const v = p.querySelector('.vmedia');
     if (!btn || !v) return;
+    const showFallback = () => {
+      if (!p.querySelector('.video-fallback')){
+        const fallback = document.createElement('div');
+        const src = v.currentSrc || v.getAttribute('src') || '';
+        fallback.className = 'video-fallback';
+        fallback.innerHTML = `This video can't play in your browser. <a href="${src}" target="_blank" rel="noopener">Open the video directly</a>.`;
+        p.appendChild(fallback);
+      }
+      p.classList.add('video-error');
+    };
+    v.addEventListener('error', showFallback);
     btn.addEventListener('click', () => {
       v.controls = true;
-      v.play().catch(()=>{});
-      btn.remove();
+      v.play().then(() => btn.remove()).catch(showFallback);
     });
   });
 </script>
