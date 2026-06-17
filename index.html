@@ -516,9 +516,9 @@
   <div class="wrap">
     <div class="grid">
       <div class="stat">
-        <div class="num" data-count="32000" data-suffix="">0</div>
+        <div class="num" data-count="36000" data-suffix="">0</div>
         <div class="lbl">Synthetic Images</div>
-        <div class="sub">WireSeg-32k · depth + instance masks</div>
+        <div class="sub">WireSeg-36k · depth + instance masks</div>
       </div>
       <div class="stat">
         <div class="num accent-cyan"><span data-count="10.2" data-dec="1">0</span><span class="u">% mAP@75</span></div>
@@ -623,12 +623,12 @@
   <div class="wrap">
     <div class="sechead reveal">
       <span class="eyebrow accent-orange">Application · Data Generation</span>
-      <h2>WireSeg-32k — a wire instance segmentation dataset</h2>
-      <p>Using the framework, we generate <strong>32,000 rendered images</strong> across 300+ independent simulation runs, with per-wire instance masks, per-pixel depth, and easy / medium / hard difficulty tiers across three scenario categories: wire-on-plane, flying wires, and data center.</p>
+      <h2>WireSeg-36k — a wire instance segmentation dataset</h2>
+      <p>Using the framework, we generate <strong>36,000 rendered images</strong> across 300+ independent simulation runs, with per-wire instance masks, per-pixel depth, and easy / medium / hard difficulty tiers across three scenario categories: wire-on-plane, flying wires, and data center.</p>
     </div>
 
     <figure class="figure reveal">
-      <img src="assets/img/pipeline.png" alt="WireSeg-32k data generation pipeline" loading="lazy" />
+      <img src="assets/img/pipeline.png" alt="WireSeg-36k data generation pipeline" loading="lazy" />
       <div class="cap"><strong>Generation pipeline.</strong> Randomized scenes are built from asset libraries; wires are simulated with the Cosserat rod engine and visualized as skinned meshes. RGB images, segmentation masks, and depth maps are rendered with domain randomization, then split by difficulty.</div>
     </figure>
     <figure class="figure reveal" style="margin-top:24px">
@@ -637,16 +637,16 @@
         <span class="corner tl"></span><span class="corner br"></span>
         <div class="vplay"><span class="ring"><svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg></span></div>
       </div>
-      <div class="cap"><strong>WireSeg-32k generation (video).</strong> Synthetic wire-segmentation scenes rendered across the three scene families and difficulty tiers.</div>
+      <div class="cap"><strong>WireSeg-36k generation (video).</strong> Synthetic wire-segmentation scenes rendered across the three scene families and difficulty tiers.</div>
     </figure>
 
     <div class="figprose" style="align-items:start">
       <figure class="figure reveal">
-        <img src="assets/img/dataset.jpg" alt="Representative WireSeg-32k images across settings and difficulty tiers" loading="lazy" />
+        <img src="assets/img/dataset.jpg" alt="Representative WireSeg-36k images across settings and difficulty tiers" loading="lazy" />
         <div class="cap">Representative images across the three settings and Easy / Medium / Hard tiers, with Hard ground-truth instance masks.</div>
       </figure>
       <div class="reveal">
-        <p class="tbl-cap"><strong>Table 1.</strong> WireSeg-32k versus existing DLO datasets.</p>
+        <p class="tbl-cap"><strong>Table 1.</strong> WireSeg-36k versus existing DLO datasets.</p>
         <div class="table-wrap">
           <table class="tbl">
             <thead><tr><th class="l">Dataset</th><th>Physics</th><th>Instance</th><th>CAD</th><th>Grounded</th><th>Images</th></tr></thead>
@@ -656,7 +656,7 @@
               <tr><td class="l">Fresnillo et al.</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td><td class="yes">✓</td><td>25k</td></tr>
               <tr><td class="l">Zanella et al.</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td><td>28.5k</td></tr>
               <tr><td class="l">ISCUTE</td><td class="no">✗</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td>28k</td></tr>
-              <tr class="ours"><td class="l">WireSeg-32k (Ours)</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td>32k</td></tr>
+              <tr class="ours"><td class="l">WireSeg-36k (Ours)</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td>36k</td></tr>
             </tbody>
           </table>
         </div>
@@ -665,7 +665,7 @@
     </div>
 
     <div class="reveal" style="margin-top:48px">
-      <p class="tbl-cap"><strong>Table 2.</strong> Fine-tuning SAM3 on WireSeg-32k — F1@75 and COCO-style mAP@75 (higher is better) across difficulty tiers, the full synthetic set, and a held-out real test set.</p>
+      <p class="tbl-cap"><strong>Table 2.</strong> Fine-tuning SAM3 on WireSeg-36k — F1@75 and COCO-style mAP@75 (higher is better) across difficulty tiers, the full synthetic set, and a held-out real test set.</p>
       <div class="table-wrap">
         <table class="tbl">
           <thead>
@@ -685,16 +685,16 @@
     <div class="dataset-cta reveal" style="margin-top:56px">
       <div class="left">
         <span class="eyebrow accent-cyan">Open Release</span>
-        <h3>Download WireSeg-32k</h3>
+        <h3>Download WireSeg-36k</h3>
         <p>Per-wire instance masks and per-pixel depth, generated entirely in DeformX.</p>
         <div class="meta-rows">
-          <div class="r"><span class="k">Rendered images</span><span class="v">32,000</span></div>
+          <div class="r"><span class="k">Rendered images</span><span class="v">36,000</span></div>
           <div class="r"><span class="k">Labels</span><span class="v">Instance masks + depth</span></div>
           <div class="r"><span class="k">Sim runs</span><span class="v">300+ independent</span></div>
           <div class="r"><span class="k">Real test set</span><span class="v">300 annotated images</span></div>
         </div>
         <div class="actions" style="margin-top:0;justify-content:flex-start;">
-          <a class="btn primary" href="https://github.com/DeformX/DeformX" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download Dataset</a>
+          <a class="btn primary" href="https://huggingface.co/datasets/DeformX/WireSeg-36K" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download Dataset</a>
           <a class="btn ghost" href="https://github.com/DeformX/DeformX" target="_blank" rel="noopener">Documentation</a>
         </div>
       </div>
@@ -766,11 +766,11 @@
     </div>
     <figure class="figure reveal" style="margin-top:48px">
       <div class="vplayer">
-        <video class="vmedia" src="assets/videos/hit_apple.mp4" preload="metadata" muted playsinline></video>
+        <video class="vmedia" src="assets/videos/hit_apple_trials.mp4" preload="metadata" muted playsinline></video>
         <span class="corner tl"></span><span class="corner br"></span>
         <div class="vplay"><span class="ring"><svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg></span></div>
       </div>
-      <div class="cap"><strong>Real-world hit-target (video).</strong> A goal-conditioned policy trained entirely in DeformX swings the rope to strike the target on a real UR5e — zero-shot sim-to-real, no real-world fine-tuning.</div>
+      <div class="cap"><strong>Real-world hit-target trials (video).</strong> A goal-conditioned policy trained entirely in DeformX swings the rope to strike the target on a real UR5e across three recorded trials — zero-shot sim-to-real, no real-world fine-tuning.</div>
     </figure>
   </div>
 </section>
@@ -787,13 +787,15 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
         <span id="copyTxt">Copy</span>
       </button>
-<pre id="bibContent"><span class="k">@misc</span>{yang2026deformx,
-  <span class="f">title</span>  = {DeformX: A Versatile Co-Simulation Framework for
-            Deformable Linear Objects},
-  <span class="f">author</span> = {Yang, Yi and Fei, Xiang and Wang, Lehong and Li, Chenhao
-            and Dai, Zilin and Kou, Henry and Li, Lu and Choset, Howie},
-  <span class="f">note</span>   = {Preprint. Under review},
-  <span class="f">year</span>   = {2026}
+<pre id="bibContent"><span class="k">@inproceedings</span>{yang2026deformx,
+  <span class="f">title</span>        = {DeformX: A Versatile Co-Simulation Framework for
+                  Deformable Linear Objects},
+  <span class="f">author</span>       = {Yang, Yi and Fei, Xiang and Wang, Lehong and Li, Chenhao
+                  and Dai, Zilin and Kou, Henry and Li, Lu and Choset, Howie},
+  <span class="f">booktitle</span>    = {2026 IEEE/RSJ International Conference on Intelligent
+                  Robots and Systems (IROS)},
+  <span class="f">year</span>         = {2026},
+  <span class="f">organization</span> = {IEEE}
 }</pre>
     </div>
   </div>
