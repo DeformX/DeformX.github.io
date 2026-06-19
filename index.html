@@ -4,15 +4,15 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>DeformX — A Versatile Co-Simulation Framework for Deformable Linear Objects</title>
-<meta name="description" content="DeformX integrates a Cosserat rod physics engine with NVIDIA Isaac Sim for physically accurate, photorealistic simulation of cables, wires, and ropes — and large-scale synthetic dataset generation." />
+<meta name="description" content="Accepted at IROS 2026. DeformX integrates a Cosserat rod physics engine with NVIDIA Isaac Sim for physically accurate, photorealistic simulation of cables, wires, and ropes — and large-scale synthetic dataset generation." />
 <meta property="og:type" content="website" />
 <meta property="og:title" content="DeformX — A Versatile Co-Simulation Framework for Deformable Linear Objects" />
-<meta property="og:description" content="Cosserat rod physics × NVIDIA Isaac Sim for physically accurate, photorealistic DLO simulation and synthetic dataset generation." />
+<meta property="og:description" content="Accepted at IROS 2026. Cosserat rod physics × NVIDIA Isaac Sim for physically accurate, photorealistic DLO simulation and synthetic dataset generation." />
 <meta property="og:image" content="assets/img/og.jpg" />
 <meta property="og:url" content="https://deformx.github.io/" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="DeformX — Co-Simulation for Deformable Linear Objects" />
-<meta name="twitter:description" content="Cosserat rod physics × NVIDIA Isaac Sim for accurate DLO simulation and synthetic data." />
+<meta name="twitter:description" content="Accepted at IROS 2026. Cosserat rod physics × NVIDIA Isaac Sim for accurate DLO simulation and synthetic data." />
 <meta name="twitter:image" content="assets/img/og.jpg" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' rx='24' fill='%230E1116'/%3E%3Cg fill='none' stroke-linecap='round' stroke-width='10'%3E%3Cpath d='M30,30 C60,44 64,76 90,90' stroke='%2323D8EA'/%3E%3Cpath d='M90,30 C64,44 60,76 30,90' stroke='%23FF9551'/%3E%3C/g%3E%3Crect x='54' y='54' width='12' height='12' rx='2' transform='rotate(45 60 60)' fill='%23EAECEC'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -352,6 +352,7 @@
   .tbl-cap strong{color:var(--cyan);}
   .table-wrap{max-width:100%;overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--card);}
   table.tbl{width:100%;border-collapse:collapse;font-size:13.5px;min-width:520px;}
+  table.tbl.sam3{min-width:980px;}
   table.tbl th,table.tbl td{padding:12px 14px;text-align:center;border-bottom:1px solid var(--line-soft);white-space:nowrap;}
   table.tbl thead th{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500;background:var(--graphite-2);}
   table.tbl td.l,table.tbl th.l{text-align:left;}
@@ -517,7 +518,7 @@
 <!-- ===================== BYLINE ===================== -->
 <section class="byline" id="byline">
   <div class="wrap">
-    <div class="pill reveal"><span class="dot"></span>Deformable Linear Objects<span class="sep">/</span>Cosserat Rods<span class="sep">/</span>Sim-to-Real</div>
+    <div class="pill reveal"><span class="dot"></span>IROS 2026 Accepted<span class="sep">/</span>Deformable Linear Objects<span class="sep">/</span>Cosserat Rods<span class="sep">/</span>Sim-to-Real</div>
     <h1 class="byline-title reveal">Deform<span class="xmark"><svg class="draw" viewBox="0 0 120 120" aria-label="X">
       <g fill="none" stroke-linecap="round" stroke-width="11">
         <path class="s-a" d="M24,22 C58,40 62,80 96,98"/><path class="s-b" d="M96,22 C62,40 58,80 24,98"/>
@@ -732,21 +733,21 @@
     </div>
 
     <div class="reveal" style="margin-top:48px">
-      <p class="tbl-cap"><strong>Table 2.</strong> Fine-tuning SAM3 on WireSeg-36k — F1@75 and COCO-style mAP@75 (higher is better) across difficulty tiers, the full synthetic set, and a held-out real test set.</p>
+      <p class="tbl-cap"><strong>Table 2.</strong> Fine-tuning SAM3 on WireSeg-36k — F1@75, COCO-style mAP@75, and mean per-image Jaccard J (higher is better) across difficulty tiers, the full synthetic set, and a held-out real test set.</p>
       <div class="table-wrap">
-        <table class="tbl">
+        <table class="tbl sam3">
           <thead>
-            <tr><th class="l" rowspan="2">Model</th><th colspan="2">Hard (Syn)</th><th colspan="2">Medium (Syn)</th><th colspan="2">Easy (Syn)</th><th colspan="2">Total (Syn)</th><th colspan="2">Total (Real)</th></tr>
-            <tr><th>F1@75</th><th>mAP@75</th><th>F1@75</th><th>mAP@75</th><th>F1@75</th><th>mAP@75</th><th>F1@75</th><th>mAP@75</th><th>F1@75</th><th>mAP@75</th></tr>
+            <tr><th class="l" rowspan="2">Model</th><th colspan="3">Hard (Syn)</th><th colspan="3">Medium (Syn)</th><th colspan="3">Easy (Syn)</th><th colspan="3">Total (Syn)</th><th colspan="3">Total (Real)</th></tr>
+            <tr><th>F1@75</th><th>mAP@75</th><th>J</th><th>F1@75</th><th>mAP@75</th><th>J</th><th>F1@75</th><th>mAP@75</th><th>J</th><th>F1@75</th><th>mAP@75</th><th>J</th><th>F1@75</th><th>mAP@75</th><th>J</th></tr>
           </thead>
           <tbody>
-            <tr><td class="l">SAM3 (Base)</td><td>0.179</td><td>0.066</td><td>0.446</td><td>0.310</td><td>0.803</td><td>0.735</td><td>0.409</td><td>0.290</td><td>0.296</td><td>0.157</td></tr>
-            <tr class="ours"><td class="l">SAM3 + LoRA</td><td>0.225</td><td>0.102</td><td>0.512</td><td>0.404</td><td>0.850</td><td>0.816</td><td>0.465</td><td>0.365</td><td>0.314</td><td class="best">0.173</td></tr>
-            <tr class="delta"><td class="l">Δ (LoRA − Base)</td><td>+25.7%</td><td>+54.5%</td><td>+14.8%</td><td>+30.3%</td><td>+5.9%</td><td>+11.0%</td><td>+13.7%</td><td>+25.7%</td><td>+6.1%</td><td>+10.2%</td></tr>
+            <tr><td class="l">SAM3 (Base)</td><td>0.169</td><td>0.052</td><td>0.467</td><td>0.454</td><td>0.291</td><td>0.676</td><td>0.818</td><td>0.783</td><td>0.848</td><td>0.456</td><td>0.328</td><td>0.679</td><td>0.296</td><td>0.157</td><td>0.486</td></tr>
+            <tr class="ours"><td class="l">SAM3 + LoRA</td><td>0.191</td><td>0.068</td><td>0.518</td><td>0.517</td><td>0.374</td><td>0.738</td><td>0.855</td><td>0.837</td><td>0.879</td><td>0.501</td><td>0.389</td><td>0.728</td><td>0.314</td><td class="best">0.173</td><td>0.496</td></tr>
+            <tr class="delta"><td class="l">Δ (LoRA − Base)</td><td>+13.4%</td><td>+31.1%</td><td>+10.9%</td><td>+13.9%</td><td>+28.8%</td><td>+9.2%</td><td>+4.5%</td><td>+6.8%</td><td>+3.7%</td><td>+9.8%</td><td>+18.4%</td><td>+7.2%</td><td>+6.1%</td><td>+10.2%</td><td>+2.1%</td></tr>
           </tbody>
         </table>
       </div>
-      <p class="tbl-note">Off-the-shelf SAM3 runs in text-prompt mode with the prompt <code>"cable"</code>. LoRA adapters (rank 16, α=32) are inserted into the attention projections; 5 epochs, lr 1×10⁻⁵, batch size 16. A complementary set of <strong>300 in-the-wild real images</strong> with manual annotations is used for the real-world evaluation.</p>
+      <p class="tbl-note">Off-the-shelf SAM3 runs in text-prompt mode with the prompt <code>"cable"</code>. LoRA adapters are inserted into the attention projections (q, k, v; rank 16, α=32, dropout 0.05); 5 epochs, lr 1×10⁻⁵, effective batch size 16. A complementary set of <strong>300 in-the-wild real images</strong> with manual annotations is used for the real-world evaluation.</p>
     </div>
 
     <div class="dataset-cta reveal" style="margin-top:56px">
@@ -831,14 +832,6 @@
       </div>
       <p class="tbl-note">Both simulators achieve low in-sim error, but only DeformX transfers reliably to the real robot — evidence that physically accurate bending, torsion, and contact are critical for sim-to-real transfer in dynamic rope swinging.</p>
     </div>
-    <figure class="figure reveal" style="margin-top:48px">
-      <div class="vplayer">
-        <video class="vmedia" src="assets/videos/hit_apple_trials.mp4" preload="metadata" muted playsinline></video>
-        <span class="corner tl"></span><span class="corner br"></span>
-        <div class="vplay"><span class="ring"><svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg></span></div>
-      </div>
-      <div class="cap"><strong>Real-world hit-target trials (video).</strong> A goal-conditioned policy trained entirely in DeformX swings the rope to strike the target on a real UR5e across three recorded trials — zero-shot sim-to-real, no real-world fine-tuning.</div>
-    </figure>
   </div>
 </section>
 

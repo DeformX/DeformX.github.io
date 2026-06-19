@@ -1,6 +1,6 @@
 # DeformX Project Page
 
-Project website for **DeformX: A Versatile Co-Simulation Framework for Deformable Linear Objects**.
+Project website for **DeformX: A Versatile Co-Simulation Framework for Deformable Linear Objects**, accepted at IROS 2026.
 
 Live site: https://deformx.github.io/
 
