@@ -584,8 +584,8 @@
   <div class="wrap">
     <div class="sechead reveal" style="text-align:center;max-width:760px;margin-left:auto;margin-right:auto;">
       <span class="eyebrow accent-orange">Real-World Highlight</span>
-      <h2>A policy trained entirely in DeformX, hitting targets on a real UR5e</h2>
-      <p style="margin-left:auto;margin-right:auto;">Zero-shot sim-to-real: the rope-swinging policy is trained only in simulation, then deployed directly on hardware across multiple goals.</p>
+      <h2>Hit-apple dynamic striking demonstration on a real UR5e</h2>
+      <p style="margin-left:auto;margin-right:auto;">Qualitative dynamic-striking demo: a UR5e swings a rope to knock an apple from a person’s head, extending the hit-target pipeline beyond the quantitative benchmark.</p>
     </div>
     <figure class="figure reveal">
       <div class="vplayer">
@@ -593,7 +593,7 @@
         <span class="corner tl"></span><span class="corner br"></span>
         <div class="vplay"><span class="ring"><svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg></span></div>
       </div>
-      <div class="cap"><strong>Real-world hit-target trials.</strong> Goal-conditioned dynamic rope swinging strikes targets across repeated runs on a real UR5e — no real-world fine-tuning.</div>
+      <div class="cap"><strong>Hit-apple dynamic striking demonstration.</strong> Real-world trials of a UR5e whipping a rope to strike the apple, showing the qualitative dynamic-manipulation behavior reported in the paper’s Fig. 11.</div>
     </figure>
   </div>
 </section>
@@ -777,7 +777,7 @@
         <div class="chips">
           <span class="chip">Easy</span><span class="chip">Medium</span><span class="chip">Hard</span>
         </div>
-        <p class="tier-note">Difficulty is assigned per image from wire count, occlusion, and clutter — independent of the scene family.</p>
+        <p class="tier-note">Difficulty is assigned per image using the off-the-shelf SAM3 baseline Jaccard score: Hard J &lt; 0.6, Medium 0.6 ≤ J &lt; 0.8, and Easy J ≥ 0.8.</p>
       </div>
     </div>
   </div>
