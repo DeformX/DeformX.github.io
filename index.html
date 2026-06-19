@@ -378,10 +378,13 @@
   @media(prefers-reduced-motion:reduce){ .reveal{opacity:1;transform:none;transition:none;} }
 
   /* hero mark draw animation */
-  .draw .s-a,.draw .s-b{stroke-dasharray:170;stroke-dashoffset:170;animation:draw 1.5s cubic-bezier(.6,.05,.2,1) forwards;}
+  .draw .s-a,.draw .s-b{stroke-dasharray:170;stroke-dashoffset:170;}
+  .reveal.in .draw .s-a,.reveal.in .draw .s-b{animation:draw 1.5s cubic-bezier(.6,.05,.2,1) forwards;}
   .draw .s-b{animation-delay:.18s;}
-  .draw .nodes *{opacity:0;animation:pop .4s ease forwards;}
-  .draw .center{opacity:0;animation:pop .5s ease .9s forwards;}
+  .draw .nodes *{opacity:0;}
+  .draw .center{opacity:0;}
+  .reveal.in .draw .nodes *{animation:pop .4s ease forwards;}
+  .reveal.in .draw .center{animation:pop .5s ease .9s forwards;}
   @keyframes draw{to{stroke-dashoffset:0;}}
   @keyframes pop{from{opacity:0;transform:scale(.4);}to{opacity:1;transform:none;}}
   @media(prefers-reduced-motion:reduce){ .draw .s-a,.draw .s-b{stroke-dashoffset:0;animation:none;} .draw .nodes *,.draw .center{opacity:1;animation:none;} }
