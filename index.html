@@ -4,15 +4,15 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>DeformX — A Versatile Co-Simulation Framework for Deformable Linear Objects</title>
-<meta name="description" content="Accepted at IROS 2026. DeformX integrates a Cosserat rod physics engine with NVIDIA Isaac Sim for physically accurate, photorealistic simulation of cables, wires, and ropes — and large-scale synthetic dataset generation." />
+<meta name="description" content="Best Paper Award at the SynData4CV workshop, CVPR 2026. Accepted at IROS 2026. DeformX integrates a Cosserat rod physics engine with NVIDIA Isaac Sim for physically accurate, photorealistic simulation of cables, wires, and ropes — and large-scale synthetic dataset generation." />
 <meta property="og:type" content="website" />
 <meta property="og:title" content="DeformX — A Versatile Co-Simulation Framework for Deformable Linear Objects" />
-<meta property="og:description" content="Accepted at IROS 2026. Cosserat rod physics × NVIDIA Isaac Sim for physically accurate, photorealistic DLO simulation and synthetic dataset generation." />
+<meta property="og:description" content="Best Paper Award — SynData4CV @ CVPR 2026. Accepted at IROS 2026. Cosserat rod physics × NVIDIA Isaac Sim for physically accurate, photorealistic DLO simulation and synthetic dataset generation." />
 <meta property="og:image" content="assets/img/og.jpg" />
 <meta property="og:url" content="https://deformx.github.io/" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="DeformX — Co-Simulation for Deformable Linear Objects" />
-<meta name="twitter:description" content="Accepted at IROS 2026. Cosserat rod physics × NVIDIA Isaac Sim for accurate DLO simulation and synthetic data." />
+<meta name="twitter:description" content="Best Paper Award — SynData4CV @ CVPR 2026. Cosserat rod physics × NVIDIA Isaac Sim for accurate DLO simulation and synthetic data." />
 <meta name="twitter:image" content="assets/img/og.jpg" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' rx='24' fill='%230E1116'/%3E%3Cg fill='none' stroke-linecap='round' stroke-width='10'%3E%3Cpath d='M30,30 C60,44 64,76 90,90' stroke='%2323D8EA'/%3E%3Cpath d='M90,30 C64,44 60,76 30,90' stroke='%23FF9551'/%3E%3C/g%3E%3Crect x='54' y='54' width='12' height='12' rx='2' transform='rotate(45 60 60)' fill='%23EAECEC'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -34,6 +34,7 @@
     --cyan-deep:#16CFE2;
     --orange:#FF9551;
     --orange-deep:#FF8C42;
+    --gold:#F7C948;
     --maxw:1120px;
   }
   *{box-sizing:border-box;}
@@ -141,6 +142,21 @@
   }
   .pill .dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);margin-right:10px;box-shadow:0 0 0 4px rgba(35,216,234,.14);}
   .pill .sep{color:var(--faint);margin:0 9px;}
+
+  /* best-paper award chip */
+  .award{
+    display:inline-flex;align-items:center;gap:10px;
+    margin:22px auto 0;padding:9px 18px;border-radius:999px;
+    border:1px solid rgba(247,201,72,.42);
+    background:linear-gradient(180deg,rgba(247,201,72,.15),rgba(247,201,72,.06));
+    font-family:"IBM Plex Mono",monospace;font-size:11.5px;font-weight:600;
+    letter-spacing:.15em;text-transform:uppercase;color:var(--gold);
+    transition:.2s;
+  }
+  .award:hover{border-color:var(--gold);transform:translateY(-2px);box-shadow:0 12px 30px -12px rgba(247,201,72,.55);}
+  .award svg{width:15px;height:15px;flex:none;}
+  .award .venue{color:var(--ink-2);font-weight:500;letter-spacing:.13em;}
+  .award .sep{color:rgba(247,201,72,.45);}
 
   .hero-title{
     display:flex;align-items:center;justify-content:center;gap:.04em;
@@ -417,6 +433,7 @@
     .mute-toggle{bottom:18px;right:16px;width:38px;height:38px;}
     .hero-inner{padding:44px 18px 44px;}
     .pill{margin-bottom:22px;font-size:10px;padding:6px 13px;flex-wrap:wrap;justify-content:center;row-gap:2px;}
+    .award{font-size:9.5px;padding:8px 14px;gap:8px;flex-wrap:wrap;justify-content:center;row-gap:3px;margin-top:18px;}
     .hero-title{font-size:clamp(46px,16vw,72px);}
     .hero-tag{font-size:17px;margin-top:18px;}
     .authors{font-size:15px;margin-top:26px;line-height:1.8;}
@@ -528,6 +545,10 @@
       </g>
     </svg></span></h1>
     <p class="byline-tag reveal">A Versatile Co-Simulation Framework for Deformable Linear Objects</p>
+    <a class="award reveal" href="https://syndata4cv.github.io/" target="_blank" rel="noopener" aria-label="Best Paper Award at the SynData4CV workshop, CVPR 2026">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M17 5h3v2a3 3 0 0 1-3 3"/><path d="M7 5H4v2a3 3 0 0 0 3 3"/></svg>
+      Best Paper Award<span class="sep">/</span><span class="venue">SynData4CV @ CVPR 2026</span>
+    </a>
     <div class="authors reveal">
       <a href="https://yiyang-23.github.io/" target="_blank" rel="noopener">Yi Yang</a><sup>1,3,4,*</sup>,
       <a href="https://edgarfx.github.io/" target="_blank" rel="noopener">Xiang Fei</a><sup>1,*</sup>,
