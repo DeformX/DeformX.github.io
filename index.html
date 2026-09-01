@@ -87,6 +87,7 @@
   .intro .scrim{position:absolute;inset:0;z-index:1;background:
      linear-gradient(180deg,rgba(8,10,14,.34) 0%,rgba(8,10,14,.05) 24%,rgba(8,10,14,.05) 58%,rgba(8,10,14,.72) 100%);}
   .intro-inner{position:relative;z-index:2;padding:0 24px;max-width:960px;}
+  .intro .pill{margin-bottom:26px;background:rgba(8,10,14,.45);}
   .intro-title{
     display:flex;align-items:center;justify-content:center;gap:.04em;
     font-weight:600;letter-spacing:-.04em;line-height:.92;margin:0;
@@ -107,6 +108,7 @@
   /* byline band under the intro */
   .byline{background:var(--graphite);border-bottom:1px solid var(--line-soft);text-align:center;}
   .byline .wrap{padding:72px 28px 56px;}
+  .byline .pill{margin:0 auto 26px;}
   .byline-title{display:flex;align-items:center;justify-content:center;gap:.04em;font-weight:600;letter-spacing:-.04em;line-height:.95;margin:0;font-size:clamp(54px,9vw,104px);}
   .byline-title .xmark{display:inline-flex;margin-left:.03em;}
   .byline-title .xmark svg{width:.86em;height:.86em;}
@@ -131,6 +133,15 @@
   }
   .hero .glow.b{left:62%;top:60px;width:520px;height:360px;background:radial-gradient(closest-side,rgba(255,149,81,.12),transparent 70%);}
   .hero-inner{position:relative;text-align:center;padding:64px 28px 56px;max-width:var(--maxw);margin:0 auto;}
+
+  .pill{
+    display:inline-flex;gap:0;align-items:center;
+    border:1px solid var(--line);border-radius:999px;padding:7px 16px;margin-bottom:30px;
+    font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2);
+    background:rgba(23,28,37,.5);
+  }
+  .pill .dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);margin-right:10px;box-shadow:0 0 0 4px rgba(35,216,234,.14);}
+  .pill .sep{color:var(--faint);margin:0 9px;}
 
   /* award / honor lines, MAC-VO style */
   .honors{
@@ -410,10 +421,12 @@
     .intro{min-height:540px;}
     .intro-title{font-size:clamp(52px,17vw,80px);}
     .intro-tag{font-size:16px;margin-top:18px;}
+    .intro .pill{margin-bottom:20px;}
     .byline .wrap{padding:30px 18px 34px;}
     .scrolldown{bottom:20px;font-size:9.5px;}
     .mute-toggle{bottom:18px;right:16px;width:38px;height:38px;}
     .hero-inner{padding:44px 18px 44px;}
+    .pill{margin-bottom:22px;font-size:10px;padding:6px 13px;flex-wrap:wrap;justify-content:center;row-gap:2px;}
     .honors{font-size:14.5px;gap:4px;margin-top:12px;}
     .hero-title{font-size:clamp(46px,16vw,72px);}
     .hero-tag{font-size:17px;margin-top:18px;}
@@ -519,6 +532,7 @@
 <!-- ===================== BYLINE ===================== -->
 <section class="byline" id="byline">
   <div class="wrap">
+    <div class="pill reveal"><span class="dot"></span>Code &amp; Dataset Released<span class="sep">/</span>Deformable Linear Objects<span class="sep">/</span>Cosserat Rods<span class="sep">/</span>Sim-to-Real</div>
     <h1 class="byline-title reveal">Deform<span class="xmark"><svg class="draw" viewBox="0 0 120 120" aria-label="X">
       <g fill="none" stroke-linecap="round" stroke-width="11">
         <path class="s-a" d="M24,22 C58,40 62,80 96,98"/><path class="s-b" d="M96,22 C62,40 58,80 24,98"/>
