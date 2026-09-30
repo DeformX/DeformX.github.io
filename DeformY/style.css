@@ -186,3 +186,9 @@ body.without-opening{padding-top:64px}body.without-opening>header{background:rgb
 #method-carousel article[data-position="active"] video{transform:translateZ(12px);box-shadow:0 12px 28px #0006}
 @media(max-width:650px){.method-loop{padding-left:36px;padding-right:36px;padding-top:22px}#method-carousel{perspective:1000px}#method-carousel article[data-position="active"]{transform:translate3d(0,-3px,20px) scale(.98)}#method-carousel article[data-position="previous"]{transform:translate3d(-9%,5px,-100px) rotateY(22deg) scale(.97)}#method-carousel article[data-position="next"]{transform:translate3d(9%,5px,-100px) rotateY(-22deg) scale(.97)}}
 @media(prefers-reduced-motion:reduce){#method-carousel article{transition:none}}
+
+/* Fan the rear cards upward and outward around the foreground card. */
+.method-loop{padding-top:118px}
+#method-carousel article[data-position="previous"]{transform:translate3d(-9%,-115px,-110px) rotateY(20deg) rotateZ(-9deg) scale(.92);transform-origin:50% 70%;opacity:.72;box-shadow:-18px 25px 40px #0007}
+#method-carousel article[data-position="next"]{transform:translate3d(9%,-115px,-110px) rotateY(-20deg) rotateZ(9deg) scale(.92);transform-origin:50% 70%;opacity:.72;box-shadow:18px 25px 40px #0007}
+@media(max-width:650px){.method-loop{padding-top:86px}#method-carousel article[data-position="previous"]{transform:translate3d(-7%,-65px,-95px) rotateY(16deg) rotateZ(-8deg) scale(.92)}#method-carousel article[data-position="next"]{transform:translate3d(7%,-65px,-95px) rotateY(-16deg) rotateZ(8deg) scale(.92)}}
