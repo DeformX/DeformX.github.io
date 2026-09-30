@@ -26,7 +26,9 @@
   samples.forEach(s=>{s._g=s.goals;});
   const vw=DY.player('swing-view',{
    samples,
-   world:{grid:{z:0,x0:-1.8,x1:1.8,y0:0,y1:3,step:.5},wall:{y:0,x0:-1.8,x1:1.8,z0:0,z1:2.9},
+   // wall and ground at 60% of the original 3.6 x 2.9 m / 3.6 x 3 m, the wall then
+   // 10% higher (user, 2026-09-30): it stands on the floor, the ground starts at it
+   world:{grid:{z:0,x0:-1.08,x1:1.08,y0:0,y1:1.8,step:.3},wall:{y:0,x0:-1.08,x1:1.08,z0:0,z1:1.914},
           plane:ws?ws.plane:null,paths:ws?ws.paths:[]},
    speed:.5,trail:36,autoplay:true,fit:true,picker:false,layer_ui:false,group_ui:false,
    layers:{axes:false,plane:false,labels:false},groups:{workspace:false}});
