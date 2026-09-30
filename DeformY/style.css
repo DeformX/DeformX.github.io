@@ -224,3 +224,15 @@ body.without-opening{padding-top:64px}body.without-opening>header{background:rgb
 .method-loop .loop-prev{left:2%}.method-loop .loop-next{right:2%}
 @media(min-width:1100px){.method-loop{width:calc(100% + 48px);max-width:calc(100vw - 40px);justify-self:center}#method-carousel{margin-left:10%;margin-right:10%}}
 @media(max-width:650px){.method-loop{padding-left:8px;padding-right:8px}#method-carousel{margin-left:9%;margin-right:9%}.method-loop .loop-prev{left:0}.method-loop .loop-next{right:0}}
+
+/* Stable rotation origins prevent edge jumps; the returning rear panel is hidden in transit. */
+#method-carousel article[data-position]{transform-origin:50% 50%;will-change:transform,opacity;transform-style:flat;transition:transform 700ms cubic-bezier(.25,.8,.25,1),opacity 240ms ease,filter 700ms ease;overflow:hidden;-webkit-backface-visibility:hidden;backface-visibility:hidden}
+#method-carousel article[data-position="active"]{transform:translateX(0) rotateY(0deg) translateX(0);filter:blur(0) brightness(1)}
+#method-carousel article[data-position="previous"]{transform:translateX(calc(-50% - 18px)) rotateY(-64deg) translateX(-50%)}
+#method-carousel article[data-position="next"]{transform:translateX(calc(50% + 18px)) rotateY(64deg) translateX(50%)}
+#method-carousel article.is-wrapping{transition:none!important;visibility:hidden!important;opacity:0!important}
+#method-carousel video{backface-visibility:hidden;-webkit-backface-visibility:hidden;border-color:transparent}
+.method-loop .loop-arrow{backdrop-filter:none;isolation:isolate;transform:translateZ(0)}
+.method-loop .loop-arrow:hover{transform:translateZ(0) scale(1.06)}
+@media(max-width:650px){#method-carousel article[data-position="previous"]{transform:translateX(calc(-50% - 10px)) rotateY(-72deg) translateX(-50%)}#method-carousel article[data-position="next"]{transform:translateX(calc(50% + 10px)) rotateY(72deg) translateX(50%)}}
+@media(prefers-reduced-motion:reduce){#method-carousel article[data-position]{transition:none}}

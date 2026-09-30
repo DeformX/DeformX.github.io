@@ -60,9 +60,17 @@ if (openingVideo && openingPause) {
 const methodTrack = document.getElementById('method-carousel');
 if (methodTrack) {
  const cards=[...methodTrack.querySelectorAll('article')],tabs=[...document.querySelectorAll('[data-method-slide]')];
- const names=['TRACE','Flow Matching · Base Policy','RECAP'];let selected=0,touch=null;
+ const names=['TRACE','Flow Matching · Base Policy','RECAP'];let selected=0,touch=null,animating=false,pending=null,initialized=false;
  const go=index=>{
-  selected=(index+cards.length)%cards.length;
+  const target=(index+cards.length)%cards.length;
+  if(animating){pending=target;return;}
+  if(initialized&&target===selected)return;
+  const previous=selected, reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const wrapping=initialized?cards.find((card,i)=>i!==previous&&i!==target):null;
+  if(wrapping&&!reduced)wrapping.classList.add('is-wrapping');
+  selected=target;
+  if(initialized&&!reduced){animating=true;setTimeout(()=>{if(wrapping)wrapping.classList.remove('is-wrapping');animating=false;const queued=pending;pending=null;if(queued!==null&&queued!==selected)go(queued);},720);}
+  initialized=true;
   cards.forEach((card,i)=>{const active=i===selected;card.dataset.position=active?'active':i===(selected+1)%cards.length?'next':'previous';card.inert=!active;card.setAttribute('aria-hidden',String(!active));card.setAttribute('role','group');card.setAttribute('aria-roledescription','slide');card.setAttribute('aria-label',(i+1)+' of '+cards.length+' · '+names[i]);const video=card.querySelector('video');if(!active)video.pause();else{const r=card.getBoundingClientRect();if(r.bottom>0&&r.top<innerHeight&&!document.hidden){const source=video.querySelector('source[data-src]');if(source){source.src=source.dataset.src;delete source.dataset.src;video.load();}video.play().catch(()=>{});}}});
   tabs.forEach((tab,i)=>tab.setAttribute('aria-pressed',String(i===selected)));
   document.getElementById('method-status').textContent=String(selected+1).padStart(2,'0')+' / 03 · '+names[selected];
