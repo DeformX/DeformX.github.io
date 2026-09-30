@@ -236,3 +236,10 @@ body.without-opening{padding-top:64px}body.without-opening>header{background:rgb
 .method-loop .loop-arrow:hover{transform:translateZ(0) scale(1.06)}
 @media(max-width:650px){#method-carousel article[data-position="previous"]{transform:translateX(calc(-50% - 10px)) rotateY(-72deg) translateX(-50%)}#method-carousel article[data-position="next"]{transform:translateX(calc(50% + 10px)) rotateY(72deg) translateX(50%)}}
 @media(prefers-reduced-motion:reduce){#method-carousel article[data-position]{transition:none}}
+
+/* Sister-project navigation. */
+nav a.project-switch{display:inline-flex;align-items:center;gap:8px;flex-shrink:0;white-space:nowrap;padding:7px 12px;border:1px solid #23d8ea75;border-radius:9px;background:linear-gradient(120deg,#14323ded,#17222fed);color:#e6fcff;font-size:13px;font-weight:600;box-shadow:0 0 15px #23d8ea12;transition:border-color .2s,background .2s}
+nav a.project-switch:hover{border-color:#23d8ea;background:#1b3e49;color:#fff}
+nav a.project-switch:focus-visible{outline:2px solid #23d8ea;outline-offset:4px}
+.project-switch .project-icon{display:block;flex:none}.project-switch .project-arrow{color:#23d8ea;font-size:16px}
+@media(max-width:420px){nav a.project-switch{gap:5px;padding:6px 8px;font-size:11px}.project-switch .project-icon{width:18px;height:18px}}
