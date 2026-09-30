@@ -270,3 +270,28 @@ nav a.project-switch:focus-visible{outline:2px solid #23d8ea;outline-offset:4px}
 .balloon-boom-title .boom-word{transform-origin:50% 65%}
 @media(prefers-reduced-motion:no-preference){.balloon-boom-title .boom-word{animation:boom-word-pop 3s ease-out infinite}}
 @keyframes boom-word-pop{0%,64%,100%{transform:scale(1)}69%{transform:scale(.95)}76%{transform:scale(1.12)}85%{transform:scale(.98)}92%{transform:scale(1)}}
+/* 00 / Simulation replay: the floating goal panel and the guides toggle (viewer.js) */
+.swing-lab .sl-vcard{position:relative}
+.swing-lab .sl-float{position:absolute;top:20px;right:20px;z-index:2;width:200px;padding:10px 11px;border:1px solid var(--line);border-radius:10px;background:rgba(23,28,37,.88);backdrop-filter:blur(6px);box-shadow:0 6px 22px rgba(0,0,0,.35);font:500 11.5px/1.4 'IBM Plex Mono',monospace;color:var(--ink)}
+.swing-lab .sl-in label{display:grid;grid-template-columns:44px 1fr 14px;gap:6px;align-items:center;margin:0 0 4px}
+.swing-lab .sl-in span{color:var(--muted)}
+.swing-lab .sl-in i{font-style:normal;color:var(--ink3);text-align:right}
+.swing-lab .sl-in input{width:100%;min-width:0;font:500 11.5px/1.4 'IBM Plex Mono',monospace;padding:3px 6px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-variant-numeric:tabular-nums}
+.swing-lab .sl-in input:focus{outline:none;border-color:var(--cyan)}
+.swing-lab button.sl-run{width:100%;margin-top:6px;padding:6px 0;border-color:var(--cyan);color:var(--cyan);font-weight:600}
+.swing-lab button.sl-run:hover:not(:disabled){background:var(--cyan);color:#04161a}
+.swing-lab button.sl-run:disabled{opacity:.45;cursor:default;border-color:var(--line);color:var(--muted)}
+.swing-lab .sl-msg{margin:5px 0 0;font-size:10.5px;color:var(--muted)}
+.swing-lab .sl-msg:empty{display:none}
+.swing-lab .sl-res{width:100%;margin:6px 0 0;border-collapse:collapse;border:0;background:none;font:500 11.5px/1.4 'IBM Plex Mono',monospace}
+.swing-lab .sl-res:empty{display:none}
+.swing-lab .sl-res td{padding:2px 0;border:0;background:none;font:inherit;white-space:nowrap;text-align:left}
+.swing-lab .sl-res td:first-child{color:var(--muted)}
+.swing-lab .sl-res td:last-child{text-align:right}
+.swing-lab .sl-res .ok{color:var(--good)}
+.swing-lab .sl-res .bad{color:var(--bad)}
+.swing-lab .sl-res em{font-style:normal;color:var(--warn);margin-left:4px}
+.swing-lab button.sl-guides{margin-left:auto}
+.swing-lab button.sl-guides.on{background:transparent;color:var(--cyan);border-color:var(--cyan)}
+.swing-lab #swing-picker button.sl-runbtn{border-style:dashed}
+@media (max-width:760px){.swing-lab .sl-float{position:static;width:auto;margin-top:10px;backdrop-filter:none;box-shadow:none}}
