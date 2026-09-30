@@ -265,3 +265,8 @@ nav a.project-switch:focus-visible{outline:2px solid #23d8ea;outline-offset:4px}
 @keyframes boom-explode{0%,64%,100%{transform:rotate(12deg) scale(1);opacity:.9}69%{transform:rotate(5deg) scale(.7);opacity:.65}76%{transform:rotate(20deg) scale(1.35);opacity:1}85%{transform:rotate(10deg) scale(.95);opacity:1}92%{transform:rotate(12deg) scale(1)}}
 @keyframes boom-shockwave{0%,69%{transform:scale(.3);opacity:0}74%{transform:scale(.65);opacity:.8}94%,100%{transform:scale(1.9);opacity:0}}
 @media(max-width:650px){.boom-word::after{width:28px;height:28px;right:-21px;top:-13px}}
+
+/* Let the word join the burst without changing the surrounding layout. */
+.balloon-boom-title .boom-word{transform-origin:50% 65%}
+@media(prefers-reduced-motion:no-preference){.balloon-boom-title .boom-word{animation:boom-word-pop 3s ease-out infinite}}
+@keyframes boom-word-pop{0%,64%,100%{transform:scale(1)}69%{transform:scale(.95)}76%{transform:scale(1.12)}85%{transform:scale(.98)}92%{transform:scale(1)}}
