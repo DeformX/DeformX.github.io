@@ -51,7 +51,9 @@
   try{guides=localStorage.getItem('pisi.guides')==='1';}catch(e){}
   function setGuides(on){
    guides=!!on;vw.layers.plane=guides;vw.layers.axes=guides;vw.groups.workspace=guides;
-   vw.samples.forEach(s=>{s.goals=guides?s._g:[];});
+   // the full drawing (sphere, gate, wedge, realised arrival) draws its arrow from the
+   // point at the panel arrow's length, so the two coincide while the target is the swing's
+   vw.samples.forEach(s=>{s.goals=guides?s._g.map(g=>({...g,arrow_from_p:true,arrow_len:.35})):[];});
    gbtn.classList.toggle('on',guides);
    try{localStorage.setItem('pisi.guides',guides?'1':'0');}catch(e){}
    syncHandles();vw.draw();
@@ -84,16 +86,19 @@
    syncHandles();paintResult();vw.draw();}));
 
   // the goal as handles: the T ball (position) and the ball on its arrow (angle)
+  // the angle handle sits on the arrowhead; guides off draws no dot there (r ~ 0),
+  // but it stays grabbable (pick radius r + 7 px), so the arrow tip still drags
   function syncHandles(){
    vw.handles=[{id:'goal',p:G.p.slice(),color:'--goal',r:7,label:'T'},
-               {id:'gdir',p:DY.add(G.p,DY.scl(G.d,0.35)),color:'--goal',r:5,label:''}];
+               {id:'gdir',p:DY.add(G.p,DY.scl(G.d,0.35)),color:'--goal',r:guides?5:0.01,label:''}];
   }
   vw.onhandle=(id,p,phase)=>{
    if(id==='goal'&&p)setGoal(p);
    else if(id==='gdir'&&p){const v=DY.sub(p,G.p);if(Math.hypot(...v)>1e-4)setGoal(null,thetaOf(v,G.p));}
    syncHandles();paintInputs();if(phase==='end')paintResult();
   };
-  vw.hooks.push(V=>{if(!guides)V.arrow(G.p,DY.add(G.p,DY.scl(G.d,0.35)),'--goal',2);});
+  // the panel's goal arrow, in both modes (the full drawing adds sphere, gate, wedge)
+  vw.hooks.push(V=>{V.arrow(G.p,DY.add(G.p,DY.scl(G.d,0.35)),'--goal',2);});
 
   // ---- results: the current sample's, when it is a live run
   const same=(r)=>r&&Math.abs(r.p[0]-G.p[0])+Math.abs(r.p[1]-G.p[1])+Math.abs(r.p[2]-G.p[2])<1e-9&&Math.cos(r.th-G.th)>1-1e-12;
