@@ -5,9 +5,29 @@ function render(mode){const d=modes[mode];document.getElementById('criterion').t
 function revealMediaSlot(){const id=location.hash.slice(1);if(!id.startsWith('asset-'))return;const target=document.getElementById(id);if(!target)return;const details=target.closest('details');if(details)details.open=true;requestAnimationFrame(()=>target.scrollIntoView({block:'start'}));}
 window.addEventListener('hashchange',revealMediaSlot);revealMediaSlot();
 
+// Preserve an explicit pause across scrolling, tab visibility, and carousel changes.
+const mediaPlayback = (() => {
+  const manualPauses = new WeakSet(), automaticPauses = new WeakSet();
+  const videos = [...document.querySelectorAll('video:has(source)')];
+  for (const video of videos) {
+    video.addEventListener('pause', () => {
+      if (automaticPauses.delete(video)) return;
+      if (!video.ended) manualPauses.add(video);
+    });
+    video.addEventListener('play', () => manualPauses.delete(video));
+  }
+  return {
+    videos,
+    play(video) { if (!manualPauses.has(video)) video.play().catch(() => {}); },
+    pause(video) {
+      if (!video.paused) { automaticPauses.add(video); video.pause(); }
+    }
+  };
+})();
+
 // Defer video requests until page load and only load videos near the viewport.
 window.addEventListener('load', () => {
-  const videos = [...document.querySelectorAll('video:has(source[data-src])')];
+  const videos = mediaPlayback.videos;
   const loadVideo = video => {
     const source = video.querySelector('source[data-src]');
     if (source) { source.src = source.dataset.src; delete source.dataset.src; video.load(); }
@@ -22,16 +42,16 @@ window.addEventListener('load', () => {
       const video = entry.target;
       if (entry.isIntersecting && !document.hidden && !video.closest('[aria-hidden="true"]')) {
         loadVideo(video);
-        video.play().catch(() => {});
-      } else video.pause();
+        mediaPlayback.play(video);
+      } else mediaPlayback.pause(video);
     }
   }, {threshold: 0.15});
   for (const video of videos) { loader.observe(video); player.observe(video); }
   document.addEventListener('visibilitychange', () => {
     for (const video of videos) {
-      if (document.hidden) video.pause();
+      if (document.hidden) mediaPlayback.pause(video);
       else { const r = video.getBoundingClientRect();
-        if (r.bottom > 0 && r.top < innerHeight && !video.closest('[aria-hidden="true"]')) { loadVideo(video); video.play().catch(() => {}); }
+        if (r.bottom > 0 && r.top < innerHeight && !video.closest('[aria-hidden="true"]')) { loadVideo(video); mediaPlayback.play(video); }
       }
     }
   });
@@ -71,7 +91,7 @@ if (methodTrack) {
   selected=target;
   if(initialized&&!reduced){animating=true;setTimeout(()=>{if(wrapping)wrapping.classList.remove('is-wrapping');animating=false;const queued=pending;pending=null;if(queued!==null&&queued!==selected)go(queued);},720);}
   initialized=true;
-  cards.forEach((card,i)=>{const active=i===selected;card.dataset.position=active?'active':i===(selected+1)%cards.length?'next':'previous';card.inert=!active;card.setAttribute('aria-hidden',String(!active));card.setAttribute('role','group');card.setAttribute('aria-roledescription','slide');card.setAttribute('aria-label',(i+1)+' of '+cards.length+' · '+names[i]);const video=card.querySelector('video');if(!active)video.pause();else{const r=card.getBoundingClientRect();if(r.bottom>0&&r.top<innerHeight&&!document.hidden){const source=video.querySelector('source[data-src]');if(source){source.src=source.dataset.src;delete source.dataset.src;video.load();}video.play().catch(()=>{});}}});
+  cards.forEach((card,i)=>{const active=i===selected;card.dataset.position=active?'active':i===(selected+1)%cards.length?'next':'previous';card.inert=!active;card.setAttribute('aria-hidden',String(!active));card.setAttribute('role','group');card.setAttribute('aria-roledescription','slide');card.setAttribute('aria-label',(i+1)+' of '+cards.length+' · '+names[i]);const video=card.querySelector('video');if(!active)mediaPlayback.pause(video);else{const r=card.getBoundingClientRect();if(r.bottom>0&&r.top<innerHeight&&!document.hidden){const source=video.querySelector('source[data-src]');if(source){source.src=source.dataset.src;delete source.dataset.src;video.load();}mediaPlayback.play(video);}}});
   tabs.forEach((tab,i)=>tab.setAttribute('aria-pressed',String(i===selected)));
   document.getElementById('method-status').textContent=String(selected+1).padStart(2,'0')+' / 03 · '+names[selected];
  };

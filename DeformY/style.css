@@ -243,3 +243,5 @@ nav a.project-switch:hover{border-color:#23d8ea;background:#1b3e49;color:#fff}
 nav a.project-switch:focus-visible{outline:2px solid #23d8ea;outline-offset:4px}
 .project-switch .project-icon{display:block;flex:none}.project-switch .project-arrow{color:#23d8ea;font-size:16px}
 @media(max-width:420px){nav a.project-switch{gap:5px;padding:6px 8px;font-size:11px}.project-switch .project-icon{width:18px;height:18px}}
+
+.paper-authors a{border-bottom:1px solid #23d8ea55;text-underline-offset:4px;transition:color .2s,border-color .2s}.paper-authors a:hover{color:var(--cyan);border-color:var(--cyan)}
