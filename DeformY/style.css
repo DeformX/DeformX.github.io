@@ -136,3 +136,24 @@ body.without-opening{padding-top:64px}body.without-opening>header{background:rgb
 
 /* Arrival angle sits beside the 3D scene, increasing upward. */
 .workspace-stage{display:grid;grid-template-columns:minmax(0,1fr) 76px;border:1px solid var(--line);border-radius:0 0 12px 12px;overflow:hidden;background:#10171f}.workspace-stage #target-space{border:0;border-radius:0;min-width:0}.arrival-rail{display:flex;flex-direction:column;align-items:center;gap:10px;padding:16px 6px;border-left:1px solid var(--line);font-size:12px;text-align:center;color:#c5cad3;margin:0}.arrival-rail output{font:14px 'IBM Plex Mono',monospace;color:#ffd27e}.arrival-rail .angle-end{font-size:10px;color:var(--muted)}.arrival-rail input{writing-mode:vertical-lr;direction:rtl;appearance:auto;flex:1;min-height:0;width:28px;margin:0;accent-color:#ffd27e;cursor:ns-resize;touch-action:none}.target-controls{grid-template-columns:repeat(3,minmax(0,1fr))}@media(max-width:650px){.workspace-stage{grid-template-columns:minmax(0,1fr) 64px}.arrival-rail{font-size:11px}.target-controls{column-gap:12px}.target-controls label{font-size:12px}.target-controls output{float:none;display:block;margin-top:5px}}
+
+/* Floating cards for the approach carousel. */
+#method{position:relative;isolation:isolate}
+#method::before{content:"";position:absolute;z-index:-1;pointer-events:none;inset:150px -20px 0;background:radial-gradient(ellipse at 20% 40%,#25cbd30b,transparent 62%)}
+#method .method-foundation{border-radius:18px;border-color:#35434d;background:linear-gradient(125deg,#1b2630,#141c24);box-shadow:0 12px 30px #0003,inset 0 1px 0 #ffffff08;padding:24px 28px}
+#method .method-carousel-nav button{border-radius:999px;transition:background .2s,border-color .2s,box-shadow .2s}
+#method .method-carousel-nav button[aria-pressed="true"]{background:#16343a;box-shadow:0 4px 18px #12cad31a}
+#method-carousel{gap:28px;padding:22px 0 40px;scrollbar-width:thin}
+#method-carousel article{position:relative;flex-basis:90%;border:1px solid #3b4b58;border-radius:24px;padding:28px;gap:20px;background:linear-gradient(145deg,#202e39 0%,#17212b 48%,#111a22 100%);box-shadow:0 18px 28px -12px #0009,0 5px 12px #0003,inset 0 1px 0 #ffffff0d;transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease}
+#method-carousel article::before{content:"";position:absolute;top:-1px;left:28px;width:72px;height:3px;border-radius:6px;background:var(--cyan);box-shadow:0 0 20px #27dce84d}
+#method-carousel article:nth-child(2)::before{background:#9cafff;box-shadow:0 0 20px #9cafff4d}
+#method-carousel article:nth-child(3)::before{background:#ffbc80;box-shadow:0 0 20px #ffbc804d}
+#method-carousel .step-number{letter-spacing:.09em;font-size:11px}
+#method-carousel .method-copy h3{margin:10px 0;font-size:30px}
+#method-carousel .method-copy p{color:#b7c4cf;line-height:1.65}
+#method-carousel video{border-radius:14px;border:1px solid #ffffff20;box-shadow:0 8px 22px #0004}
+#method-carousel .method-video-link{font-size:12px;color:#aebfcc}
+#method-carousel article:focus-within{border-color:#65cdd4;box-shadow:0 22px 32px -12px #000b,0 0 0 1px #65cdd433}
+@media(hover:hover) and (prefers-reduced-motion:no-preference){#method-carousel article:hover{transform:translateY(-7px);border-color:#65cdd4;box-shadow:0 25px 34px -12px #000b,0 0 25px #27dce80a}}
+@media(max-width:650px){#method .method-foundation{padding:20px;border-radius:16px}#method-carousel{gap:16px;padding-top:16px;padding-bottom:30px}#method-carousel article{flex-basis:94%;padding:18px;gap:16px;border-radius:18px}#method-carousel .method-copy h3{font-size:25px}#method-carousel video{border-radius:10px}}
+@media(prefers-reduced-motion:reduce){#method-carousel article,#method .method-carousel-nav button{transition:none}}
