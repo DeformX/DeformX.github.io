@@ -56,3 +56,22 @@ if (openingVideo && openingPause) {
   openingVideo.addEventListener('pause', updatePause);
   updatePause();
 }
+// Method carousel: native swipe/trackpad scrolling plus tabs and arrow controls.
+const methodTrack = document.getElementById('method-carousel');
+if (methodTrack) {
+  const cards = [...methodTrack.querySelectorAll('article')];
+  const tabs = [...document.querySelectorAll('[data-method-slide]')];
+  const prev = document.getElementById('method-prev'), next = document.getElementById('method-next');
+  let selected = 0;
+  const sync = () => {
+    selected = cards.reduce((best, card, i) => Math.abs(card.offsetLeft - methodTrack.scrollLeft) < Math.abs(cards[best].offsetLeft - methodTrack.scrollLeft) ? i : best, 0);
+    tabs.forEach((tab, i) => tab.setAttribute('aria-pressed', String(i === selected)));
+    prev.disabled = selected === 0; next.disabled = selected === cards.length - 1;
+  };
+  const go = i => methodTrack.scrollTo({left:cards[Math.max(0,Math.min(cards.length - 1,i))].offsetLeft,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
+  tabs.forEach((tab,i) => tab.addEventListener('click', () => go(i)));
+  prev.addEventListener('click',()=>go(selected-1)); next.addEventListener('click',()=>go(selected+1));
+  methodTrack.addEventListener('scroll',sync,{passive:true});
+  methodTrack.addEventListener('keydown',e=>{if(e.target!==methodTrack)return;if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();go(selected+(e.key==='ArrowRight'?1:-1));}});
+  window.addEventListener('resize',sync); sync();
+}

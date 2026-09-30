@@ -118,3 +118,16 @@ body>header .brand,body>header nav{text-shadow:0 1px 8px #0009;color:#fff}
 
 /* Start directly with the paper while the opening film is disabled. */
 body.without-opening{padding-top:64px}body.without-opening>header{background:rgba(14,17,22,.92);backdrop-filter:blur(14px);border-bottom-color:var(--line)}body.without-opening #paper{border-top:0}
+
+/* Impact highlight and horizontally scrolling method demonstrations. */
+.burst-highlight{max-width:900px;margin:32px auto 24px;padding:24px;display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:center;text-align:left;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
+.compact-hero .burst-copy h2{font-size:clamp(28px,3.5vw,42px);line-height:1.15;color:var(--ink);margin:14px 0}
+.burst-copy p{font-size:16px;color:var(--muted);line-height:1.7}.burst-copy .eyebrow{color:var(--cyan);margin:0}.burst-speed{font:11px/1.6 var(--mono);color:var(--orange)}
+.burst-highlight video{display:block;width:100%;height:auto;max-height:72svh;object-fit:contain;border-radius:8px;background:#0b0d11}
+.method-carousel-nav{grid-column:1/-1;display:flex;gap:16px;justify-content:space-between;align-items:center}.method-tabs,.method-arrows{display:flex;gap:8px;flex-wrap:wrap}
+.method-carousel-nav button{background:var(--panel);color:var(--muted);border:1px solid var(--line);border-radius:8px;padding:10px 14px;font:13px 'Space Grotesk',sans-serif;cursor:pointer}.method-carousel-nav button[aria-pressed="true"]{color:var(--cyan);border-color:var(--cyan)}.method-carousel-nav button:disabled{opacity:.35;cursor:default}
+#method-carousel{display:flex;position:relative;min-width:0;max-width:100%;overflow-x:auto;scroll-snap-type:x mandatory;gap:20px;padding:0 0 14px;scrollbar-color:var(--line) transparent;overscroll-behavior-x:contain}
+#method-carousel article{flex:0 0 92%;box-sizing:border-box;display:flex;flex-direction:column;gap:16px;padding:24px;scroll-snap-align:start;scroll-snap-stop:always}
+#method-carousel .method-copy{align-self:stretch;display:block}#method-carousel .method-copy h3{margin:8px 0;font-size:28px}#method-carousel .method-copy h3 span{display:inline;font-size:16px;margin-left:8px}#method-carousel .method-copy p{max-width:75ch;font-size:15px}
+#method-carousel video{width:100%;height:auto;margin:0;align-self:stretch;aspect-ratio:16/9}#method-carousel .method-video-link{align-self:flex-end;margin:0}
+@media(max-width:650px){.burst-highlight{grid-template-columns:1fr;padding:16px;gap:16px}.burst-highlight video{max-height:65svh}.method-carousel-nav{align-items:flex-start}.method-tabs{gap:5px}.method-carousel-nav button{font-size:11px;padding:8px}.method-arrows{flex-wrap:nowrap}#method-carousel article{flex-basis:96%;padding:14px}#method-carousel .method-copy h3{font-size:24px}#method-carousel .method-copy h3 span{display:block;margin:4px 0 0}}
