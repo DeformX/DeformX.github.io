@@ -20,7 +20,7 @@ window.addEventListener('load', () => {
   const player = new IntersectionObserver(entries => {
     for (const entry of entries) {
       const video = entry.target;
-      if (entry.isIntersecting && !document.hidden) {
+      if (entry.isIntersecting && !document.hidden && !video.closest('[aria-hidden="true"]')) {
         loadVideo(video);
         video.play().catch(() => {});
       } else video.pause();
@@ -31,7 +31,7 @@ window.addEventListener('load', () => {
     for (const video of videos) {
       if (document.hidden) video.pause();
       else { const r = video.getBoundingClientRect();
-        if (r.bottom > 0 && r.top < innerHeight) { loadVideo(video); video.play().catch(() => {}); }
+        if (r.bottom > 0 && r.top < innerHeight && !video.closest('[aria-hidden="true"]')) { loadVideo(video); video.play().catch(() => {}); }
       }
     }
   });
@@ -56,22 +56,22 @@ if (openingVideo && openingPause) {
   openingVideo.addEventListener('pause', updatePause);
   updatePause();
 }
-// Method carousel: native swipe/trackpad scrolling plus tabs and arrow controls.
+// Circular card deck: every next/previous transition wraps around.
 const methodTrack = document.getElementById('method-carousel');
 if (methodTrack) {
-  const cards = [...methodTrack.querySelectorAll('article')];
-  const tabs = [...document.querySelectorAll('[data-method-slide]')];
-  const prev = document.getElementById('method-prev'), next = document.getElementById('method-next');
-  let selected = 0;
-  const sync = () => {
-    selected = cards.reduce((best, card, i) => Math.abs(card.offsetLeft - methodTrack.scrollLeft) < Math.abs(cards[best].offsetLeft - methodTrack.scrollLeft) ? i : best, 0);
-    tabs.forEach((tab, i) => tab.setAttribute('aria-pressed', String(i === selected)));
-    prev.disabled = selected === 0; next.disabled = selected === cards.length - 1;
-  };
-  const go = i => methodTrack.scrollTo({left:cards[Math.max(0,Math.min(cards.length - 1,i))].offsetLeft,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
-  tabs.forEach((tab,i) => tab.addEventListener('click', () => go(i)));
-  prev.addEventListener('click',()=>go(selected-1)); next.addEventListener('click',()=>go(selected+1));
-  methodTrack.addEventListener('scroll',sync,{passive:true});
-  methodTrack.addEventListener('keydown',e=>{if(e.target!==methodTrack)return;if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();go(selected+(e.key==='ArrowRight'?1:-1));}});
-  window.addEventListener('resize',sync); sync();
+ const cards=[...methodTrack.querySelectorAll('article')],tabs=[...document.querySelectorAll('[data-method-slide]')];
+ const names=['TRACE','Flow Matching · Base Policy','RECAP'];let selected=0,touch=null;
+ const go=index=>{
+  selected=(index+cards.length)%cards.length;
+  cards.forEach((card,i)=>{const active=i===selected;card.dataset.position=active?'active':i===(selected+1)%cards.length?'next':'previous';card.inert=!active;card.setAttribute('aria-hidden',String(!active));card.setAttribute('role','group');card.setAttribute('aria-roledescription','slide');card.setAttribute('aria-label',(i+1)+' of '+cards.length+' · '+names[i]);const video=card.querySelector('video');if(!active)video.pause();else{const r=card.getBoundingClientRect();if(r.bottom>0&&r.top<innerHeight&&!document.hidden){const source=video.querySelector('source[data-src]');if(source){source.src=source.dataset.src;delete source.dataset.src;video.load();}video.play().catch(()=>{});}}});
+  tabs.forEach((tab,i)=>tab.setAttribute('aria-pressed',String(i===selected)));
+  document.getElementById('method-status').textContent=String(selected+1).padStart(2,'0')+' / 03 · '+names[selected];
+ };
+ tabs.forEach((tab,i)=>tab.addEventListener('click',()=>go(i)));
+ document.getElementById('method-prev').addEventListener('click',()=>go(selected-1));
+ document.getElementById('method-next').addEventListener('click',()=>go(selected+1));
+ methodTrack.addEventListener('keydown',e=>{if(e.target!==methodTrack)return;if(e.key==='ArrowLeft'||e.key==='ArrowRight'){e.preventDefault();go(selected+(e.key==='ArrowRight'?1:-1));}});
+ methodTrack.addEventListener('touchstart',e=>{touch=e.target.closest('video,a,button')?null:[e.touches[0].clientX,e.touches[0].clientY];},{passive:true});
+ methodTrack.addEventListener('touchend',e=>{if(!touch)return;const dx=e.changedTouches[0].clientX-touch[0],dy=e.changedTouches[0].clientY-touch[1];if(Math.abs(dx)>45&&Math.abs(dx)>Math.abs(dy))go(selected+(dx<0?1:-1));touch=null;},{passive:true});
+ go(0);
 }

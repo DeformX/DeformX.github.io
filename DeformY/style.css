@@ -157,3 +157,18 @@ body.without-opening{padding-top:64px}body.without-opening>header{background:rgb
 @media(hover:hover) and (prefers-reduced-motion:no-preference){#method-carousel article:hover{transform:translateY(-7px);border-color:#65cdd4;box-shadow:0 25px 34px -12px #000b,0 0 25px #27dce80a}}
 @media(max-width:650px){#method .method-foundation{padding:20px;border-radius:16px}#method-carousel{gap:16px;padding-top:16px;padding-bottom:30px}#method-carousel article{flex-basis:94%;padding:18px;gap:16px;border-radius:18px}#method-carousel .method-copy h3{font-size:25px}#method-carousel video{border-radius:10px}}
 @media(prefers-reduced-motion:reduce){#method-carousel article,#method .method-carousel-nav button{transition:none}}
+
+/* Circular floating deck with controls on either side. */
+.method-loop{grid-column:1/-1;position:relative;min-width:0;padding:24px 62px 0;isolation:isolate}
+#method .method-carousel-nav{justify-content:center}
+#method-carousel{display:grid;grid-template-columns:minmax(0,1fr);overflow:visible;scroll-snap-type:none;padding:0;margin:0;gap:0;touch-action:pan-y;perspective:1200px}
+#method-carousel article{grid-area:1/1;min-width:0;width:100%;margin:0;transform-origin:center;transition:transform .45s cubic-bezier(.22,.7,.2,1),opacity .35s,border-color .25s;backface-visibility:hidden}
+#method-carousel article[data-position="active"]{transform:translateX(0) scale(1);opacity:1;z-index:3;box-shadow:0 24px 45px -16px #000b,0 4px 16px #0005}
+#method-carousel article[data-position="previous"]{transform:translateX(-4.5%) scale(.93);opacity:.35;z-index:1;pointer-events:none}
+#method-carousel article[data-position="next"]{transform:translateX(4.5%) scale(.93);opacity:.35;z-index:2;pointer-events:none}
+#method-carousel article:not([data-position="active"]) video{visibility:hidden}
+.loop-arrow{position:absolute;top:48%;z-index:5;display:grid;place-items:center;width:46px;height:46px;padding:0;border:1px solid #53646f;border-radius:50%;background:#1b2a34;color:#e3f8fa;font-size:25px;cursor:pointer;box-shadow:0 6px 18px #0006;transition:background .2s,transform .2s}
+.loop-prev{left:0}.loop-next{right:0}.loop-arrow:hover{background:#25505a;transform:scale(1.08)}.loop-arrow:focus-visible{outline:2px solid var(--cyan);outline-offset:4px}
+.loop-status{text-align:center;color:var(--muted);font:12px 'IBM Plex Mono',monospace;letter-spacing:.05em;margin:30px 0 0}
+@media(max-width:650px){.method-loop{padding:14px 34px 0}.loop-arrow{width:30px;height:38px;font-size:21px}#method-carousel article{padding:14px;gap:14px}#method-carousel .method-copy h3{font-size:23px}#method-carousel .method-copy p{font-size:13px}.loop-status{font-size:11px;margin-top:24px}}
+@media(prefers-reduced-motion:reduce){#method-carousel article,.loop-arrow{transition:none}}
