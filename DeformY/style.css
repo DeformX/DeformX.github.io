@@ -210,3 +210,10 @@ body.without-opening{padding-top:64px}body.without-opening>header{background:rgb
 .loop-arrow{top:48%;background:#1b2a34f5}
 @media(max-width:650px){.method-loop{padding:24px 30px 0}#method-carousel{margin:0 9%;perspective:800px}#method-carousel article[data-position="previous"]{transform:translateX(-100%) rotateY(-72deg)}#method-carousel article[data-position="next"]{transform:translateX(100%) rotateY(72deg)}}
 @media(prefers-reduced-motion:reduce){#method-carousel article{transition:none}}
+
+/* Softer side panels, separated hinges, and controls over the side panels. */
+#method-carousel article[data-position="previous"]{transform:translateX(calc(-100% - 18px)) rotateY(-64deg);filter:blur(2px) brightness(.52);opacity:.58}
+#method-carousel article[data-position="next"]{transform:translateX(calc(100% + 18px)) rotateY(64deg);filter:blur(2px) brightness(.52);opacity:.58}
+.method-loop .loop-prev{left:7.8%}.method-loop .loop-next{right:7.8%}
+.method-loop .loop-arrow{background:#182e3ee6;border-color:#8295a180;box-shadow:0 5px 22px #0009;backdrop-filter:blur(8px)}
+@media(max-width:650px){#method-carousel article[data-position="previous"]{transform:translateX(calc(-100% - 10px)) rotateY(-72deg);filter:blur(1.5px) brightness(.52)}#method-carousel article[data-position="next"]{transform:translateX(calc(100% + 10px)) rotateY(72deg);filter:blur(1.5px) brightness(.52)}.method-loop .loop-prev{left:6%}.method-loop .loop-next{right:6%}}
