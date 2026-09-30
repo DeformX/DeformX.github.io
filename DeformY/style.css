@@ -172,3 +172,17 @@ body.without-opening{padding-top:64px}body.without-opening>header{background:rgb
 .loop-status{text-align:center;color:var(--muted);font:12px 'IBM Plex Mono',monospace;letter-spacing:.05em;margin:30px 0 0}
 @media(max-width:650px){.method-loop{padding:14px 34px 0}.loop-arrow{width:30px;height:38px;font-size:21px}#method-carousel article{padding:14px;gap:14px}#method-carousel .method-copy h3{font-size:23px}#method-carousel .method-copy p{font-size:13px}.loop-status{font-size:11px;margin-top:24px}}
 @media(prefers-reduced-motion:reduce){#method-carousel article,.loop-arrow{transition:none}}
+
+/* Perspective deck: the active card floats ahead of two angled side cards. */
+.method-loop{padding-left:76px;padding-right:76px;padding-top:32px}
+#method-carousel{perspective:1500px;perspective-origin:50% 45%;transform-style:preserve-3d}
+#method-carousel article{transform-style:preserve-3d;transition:transform .65s cubic-bezier(.22,.75,.2,1),opacity .5s,filter .5s,border-color .25s;backface-visibility:hidden}
+#method-carousel article[data-position="active"]{transform:translate3d(0,-6px,45px) rotateY(0deg) scale(.96);opacity:1;z-index:3;filter:brightness(1);box-shadow:0 36px 50px -20px #000e,0 12px 25px #0007,inset 0 1px 0 #ffffff20;border-color:#596d7c}
+#method-carousel article[data-position="previous"]{transform:translate3d(-10%,8px,-140px) rotateY(24deg) scale(.96);opacity:.65;z-index:1;filter:brightness(.62);box-shadow:-12px 20px 35px #0006}
+#method-carousel article[data-position="next"]{transform:translate3d(10%,8px,-140px) rotateY(-24deg) scale(.96);opacity:.65;z-index:2;filter:brightness(.62);box-shadow:12px 20px 35px #0006}
+#method-carousel article:not([data-position="active"]) video{visibility:visible}
+#method-carousel article::after{content:"";position:absolute;pointer-events:none;inset:0;border-radius:inherit;background:linear-gradient(120deg,#ffffff09,transparent 36%,transparent 75%,#00000015);border:1px solid #ffffff05}
+#method-carousel article[data-position="active"] .method-copy{transform:translateZ(8px)}
+#method-carousel article[data-position="active"] video{transform:translateZ(12px);box-shadow:0 12px 28px #0006}
+@media(max-width:650px){.method-loop{padding-left:36px;padding-right:36px;padding-top:22px}#method-carousel{perspective:1000px}#method-carousel article[data-position="active"]{transform:translate3d(0,-3px,20px) scale(.98)}#method-carousel article[data-position="previous"]{transform:translate3d(-9%,5px,-100px) rotateY(22deg) scale(.97)}#method-carousel article[data-position="next"]{transform:translate3d(9%,5px,-100px) rotateY(-22deg) scale(.97)}}
+@media(prefers-reduced-motion:reduce){#method-carousel article{transition:none}}
