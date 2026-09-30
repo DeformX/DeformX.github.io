@@ -245,3 +245,10 @@ nav a.project-switch:focus-visible{outline:2px solid #23d8ea;outline-offset:4px}
 @media(max-width:420px){nav a.project-switch{gap:5px;padding:6px 8px;font-size:11px}.project-switch .project-icon{width:18px;height:18px}}
 
 .paper-authors a{border-bottom:1px solid #23d8ea55;text-underline-offset:4px;transition:color .2s,border-color .2s}.paper-authors a:hover{color:var(--cyan);border-color:var(--cyan)}
+
+.balloon-boom-title{padding-right:28px;overflow:visible}
+.balloon-boom-title .boom-word{position:relative;display:inline-block;color:#ffad62;text-shadow:0 0 28px #ff95512b}
+.boom-burst{position:absolute;width:52px;height:52px;right:-34px;top:-25px;pointer-events:none;transform:rotate(12deg)}
+@media(hover:hover) and (prefers-reduced-motion:no-preference){.burst-highlight:hover .boom-burst{animation:boom-pop .65s ease-out both}}
+@keyframes boom-pop{0%{transform:rotate(12deg) scale(.7);opacity:.5}45%{transform:rotate(26deg) scale(1.15);opacity:1}100%{transform:rotate(12deg) scale(1);opacity:1}}
+@media(max-width:650px){.boom-burst{width:40px;height:40px;right:-27px;top:-19px}}
