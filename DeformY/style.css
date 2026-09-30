@@ -217,3 +217,10 @@ body.without-opening{padding-top:64px}body.without-opening>header{background:rgb
 .method-loop .loop-prev{left:7.8%}.method-loop .loop-next{right:7.8%}
 .method-loop .loop-arrow{background:#182e3ee6;border-color:#8295a180;box-shadow:0 5px 22px #0009;backdrop-filter:blur(8px)}
 @media(max-width:650px){#method-carousel article[data-position="previous"]{transform:translateX(calc(-100% - 10px)) rotateY(-72deg);filter:blur(1.5px) brightness(.52)}#method-carousel article[data-position="next"]{transform:translateX(calc(100% + 10px)) rotateY(72deg);filter:blur(1.5px) brightness(.52)}.method-loop .loop-prev{left:6%}.method-loop .loop-next{right:6%}}
+
+/* Expand the deck and move the overlaid controls toward the outer edges. */
+.method-loop{padding-left:16px;padding-right:16px}
+#method-carousel{margin-left:11%;margin-right:11%}
+.method-loop .loop-prev{left:2%}.method-loop .loop-next{right:2%}
+@media(min-width:1100px){.method-loop{width:calc(100% + 48px);max-width:calc(100vw - 40px);justify-self:center}#method-carousel{margin-left:10%;margin-right:10%}}
+@media(max-width:650px){.method-loop{padding-left:8px;padding-right:8px}#method-carousel{margin-left:9%;margin-right:9%}.method-loop .loop-prev{left:0}.method-loop .loop-next{right:0}}
