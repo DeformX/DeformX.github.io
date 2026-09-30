@@ -198,3 +198,15 @@ body.without-opening{padding-top:64px}body.without-opening>header{background:rgb
 #method-carousel article[data-position="previous"]{transform:translate3d(-26%,-115px,-230px) rotateY(-38deg) scale(.92)}
 #method-carousel article[data-position="next"]{transform:translate3d(26%,-115px,-230px) rotateY(38deg) scale(.92)}
 @media(max-width:650px){#method-carousel article[data-position="previous"]{transform:translate3d(-22%,-65px,-150px) rotateY(-32deg) scale(.92)}#method-carousel article[data-position="next"]{transform:translate3d(22%,-65px,-150px) rotateY(32deg) scale(.92)}}
+
+/* Hinged triptych: adjoining edges remain attached to the front panel. */
+.method-loop{padding:30px 48px 0}
+#method-carousel{perspective:1100px;perspective-origin:50% 50%;margin:0 14%;transform-style:flat}
+#method-carousel article[data-position="active"]{transform:none;opacity:1;filter:none;z-index:3;border-radius:16px}
+#method-carousel article[data-position="previous"]{transform-origin:100% 50%;transform:translateX(-100%) rotateY(-64deg);opacity:.72;filter:brightness(.65);z-index:1;border-radius:16px}
+#method-carousel article[data-position="next"]{transform-origin:0% 50%;transform:translateX(100%) rotateY(64deg);opacity:.72;filter:brightness(.65);z-index:1;border-radius:16px}
+#method-carousel article[data-position="active"] .method-copy,#method-carousel article[data-position="active"] video{transform:none}
+#method-carousel article{transition:transform .65s cubic-bezier(.22,.75,.2,1),opacity .5s,filter .5s;}
+.loop-arrow{top:48%;background:#1b2a34f5}
+@media(max-width:650px){.method-loop{padding:24px 30px 0}#method-carousel{margin:0 9%;perspective:800px}#method-carousel article[data-position="previous"]{transform:translateX(-100%) rotateY(-72deg)}#method-carousel article[data-position="next"]{transform:translateX(100%) rotateY(72deg)}}
+@media(prefers-reduced-motion:reduce){#method-carousel article{transition:none}}
