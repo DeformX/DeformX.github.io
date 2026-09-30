@@ -252,3 +252,16 @@ nav a.project-switch:focus-visible{outline:2px solid #23d8ea;outline-offset:4px}
 @media(hover:hover) and (prefers-reduced-motion:no-preference){.burst-highlight:hover .boom-burst{animation:boom-pop .65s ease-out both}}
 @keyframes boom-pop{0%{transform:rotate(12deg) scale(.7);opacity:.5}45%{transform:rotate(26deg) scale(1.15);opacity:1}100%{transform:rotate(12deg) scale(1);opacity:1}}
 @media(max-width:650px){.boom-burst{width:40px;height:40px;right:-27px;top:-19px}}
+
+/* Red burst, with a short pop and expanding rays between calm intervals. */
+.balloon-boom-title .boom-word{color:#ff4b4b;text-shadow:0 0 22px #ff333338}
+.boom-burst path:first-child{fill:#ff3939;stroke:#ff6767;fill-opacity:.18}
+.boom-burst path:last-child{fill:#ffb29a}
+.boom-word::after{content:"";position:absolute;pointer-events:none;right:-26px;top:-17px;width:36px;height:36px;border:2px solid #ff5050;border-radius:50%;opacity:0}
+@media(prefers-reduced-motion:no-preference){
+ .burst-highlight .boom-burst,.burst-highlight:hover .boom-burst{animation:boom-explode 3s ease-out infinite}
+ .boom-word::after{animation:boom-shockwave 3s ease-out infinite}
+}
+@keyframes boom-explode{0%,64%,100%{transform:rotate(12deg) scale(1);opacity:.9}69%{transform:rotate(5deg) scale(.7);opacity:.65}76%{transform:rotate(20deg) scale(1.35);opacity:1}85%{transform:rotate(10deg) scale(.95);opacity:1}92%{transform:rotate(12deg) scale(1)}}
+@keyframes boom-shockwave{0%,69%{transform:scale(.3);opacity:0}74%{transform:scale(.65);opacity:.8}94%,100%{transform:scale(1.9);opacity:0}}
+@media(max-width:650px){.boom-word::after{width:28px;height:28px;right:-21px;top:-13px}}
