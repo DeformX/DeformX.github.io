@@ -189,6 +189,12 @@ body.without-opening{padding-top:64px}body.without-opening>header{background:rgb
 
 /* Fan the rear cards upward and outward around the foreground card. */
 .method-loop{padding-top:118px}
-#method-carousel article[data-position="previous"]{transform:translate3d(-9%,-115px,-110px) rotateY(20deg) rotateZ(-9deg) scale(.92);transform-origin:50% 70%;opacity:.72;box-shadow:-18px 25px 40px #0007}
-#method-carousel article[data-position="next"]{transform:translate3d(9%,-115px,-110px) rotateY(-20deg) rotateZ(9deg) scale(.92);transform-origin:50% 70%;opacity:.72;box-shadow:18px 25px 40px #0007}
-@media(max-width:650px){.method-loop{padding-top:86px}#method-carousel article[data-position="previous"]{transform:translate3d(-7%,-65px,-95px) rotateY(16deg) rotateZ(-8deg) scale(.92)}#method-carousel article[data-position="next"]{transform:translate3d(7%,-65px,-95px) rotateY(-16deg) rotateZ(8deg) scale(.92)}}
+#method-carousel article[data-position="previous"]{transform:translate3d(-9%,-115px,-110px) rotateY(-38deg) scale(.92);transform-origin:50% 70%;opacity:.72;box-shadow:-18px 25px 40px #0007}
+#method-carousel article[data-position="next"]{transform:translate3d(9%,-115px,-110px) rotateY(38deg) scale(.92);transform-origin:50% 70%;opacity:.72;box-shadow:18px 25px 40px #0007}
+@media(max-width:650px){.method-loop{padding-top:86px}#method-carousel article[data-position="previous"]{transform:translate3d(-7%,-65px,-95px) rotateY(-32deg) scale(.92)}#method-carousel article[data-position="next"]{transform:translate3d(7%,-65px,-95px) rotateY(32deg) scale(.92)}}
+
+/* Independent perspective planes keep the rear cards behind the foreground. */
+#method-carousel{transform-style:flat}
+#method-carousel article[data-position="previous"]{transform:translate3d(-26%,-115px,-230px) rotateY(-38deg) scale(.92)}
+#method-carousel article[data-position="next"]{transform:translate3d(26%,-115px,-230px) rotateY(38deg) scale(.92)}
+@media(max-width:650px){#method-carousel article[data-position="previous"]{transform:translate3d(-22%,-65px,-150px) rotateY(-32deg) scale(.92)}#method-carousel article[data-position="next"]{transform:translate3d(22%,-65px,-150px) rotateY(32deg) scale(.92)}}
