@@ -16,6 +16,24 @@
  try{
   const [arm,swings]=await Promise.all(['assets/viewer/arm.json','assets/viewer/swings.json'].map(get));
   const ws=await get('assets/viewer/workspace.json').catch(()=>null);
+  // Use the same exact shell/cone/height definition as the yellow guide paths.
+  // Missing or malformed geometry must never allow an unvalidated inference run.
+  const region=ws&&ws.workspace;
+  const finiteVector=(a,n)=>Array.isArray(a)&&a.length===n&&a.every(Number.isFinite);
+  const regionReady=!!(region&&finiteVector(region.base,3)&&finiteVector(region.axis,3)
+   &&Math.hypot(...region.axis)>0&&Number.isFinite(Math.hypot(...region.axis))&&finiteVector(region.radius,2)
+   &&region.radius[0]>0&&region.radius[1]>=region.radius[0]&&finiteVector(region.z,2)
+   &&region.z[1]>=region.z[0]&&Number.isFinite(region.min_axis_proj)
+   &&Number.isFinite(region.bearing_half_deg)&&region.bearing_half_deg>=0&&region.bearing_half_deg<=180);
+  function inReachableRegion(p){
+   if(!regionReady||!finiteVector(p,3))return false;
+   const d=p.map((v,i)=>v-region.base[i]),r=Math.hypot(...d),eps=1e-9;
+   const projection=d.reduce((s,v,i)=>s+v*region.axis[i],0)/Math.hypot(...region.axis);
+   return r>=region.radius[0]-eps&&r<=region.radius[1]+eps
+    &&p[2]>=region.z[0]-eps&&p[2]<=region.z[1]+eps
+    &&projection>=region.min_axis_proj-eps
+    &&projection>=r*Math.cos(region.bearing_half_deg*Math.PI/180)-eps;
+  }
   const cfg=await get('demo-config.json').catch(()=>({}));
   const API=(cfg&&typeof cfg.inference==='string')?cfg.inference.replace(/\/$/,''):'';
   DY.setArm(arm);
@@ -31,7 +49,7 @@
    world:{grid:{z:0,x0:-1.08,x1:1.08,y0:0,y1:1.8,step:.3},wall:{y:0,x0:-1.08,x1:1.08,z0:0,z1:1.914},
           plane:ws?ws.plane:null,paths:ws?ws.paths:[]},
    speed:.5,trail:36,autoplay:true,fit:true,picker:false,layer_ui:false,group_ui:false,
-   layers:{axes:false,plane:false,labels:false},groups:{workspace:false}});
+   layers:{axes:true,plane:true,labels:false},groups:{workspace:true}});
   const host=document.getElementById('swing-picker');
   const note=document.getElementById('swing-note');
   const angle=a=>`${a<0?'−':'+'}${Math.abs(Math.round(a))}°`;
@@ -47,22 +65,25 @@
   const setGoal=(p,th)=>{if(p)G.p=p.slice();if(th!==undefined)G.th=Math.atan2(Math.sin(th),Math.cos(th));G.d=dstar(G.p,G.th);};
 
   // ---- guides: keep-out plane, workspace, axes, full target drawing
-  let guides=false;
-  try{guides=localStorage.getItem('pisi.guides')==='1';}catch(e){}
+  // The old preference auto-saved the former off-by-default state for every visitor.
+  const guidesKey='pisi.guides.v2';
+  let guides=true;
+  try{guides=localStorage.getItem(guidesKey)!=='0';}catch(e){}
   function setGuides(on){
    guides=!!on;vw.layers.plane=guides;vw.layers.axes=guides;vw.groups.workspace=guides;
    // the full drawing (sphere, gate, wedge, realised arrival) draws its arrow from the
    // point at the panel arrow's length, so the two coincide while the target is the swing's
    vw.samples.forEach(s=>{s.goals=guides?s._g.map(g=>({...g,arrow_from_p:true,arrow_len:.35})):[];});
    gbtn.classList.toggle('on',guides);
-   try{localStorage.setItem('pisi.guides',guides?'1':'0');}catch(e){}
-   syncHandles();vw.draw();
+   gbtn.setAttribute('aria-pressed',String(guides));
+   try{localStorage.setItem(guidesKey,guides?'1':'0');}catch(e){}
+   syncHandles();updateRunState();vw.draw();
   }
   const row=document.querySelector('#swing-view-ui .dy-row');
   const spd=row&&row.querySelector('select');if(spd)spd.remove();   // not an option here
   const gbtn=document.createElement('button');
   gbtn.className='sl-guides';gbtn.textContent='guides';
-  gbtn.title='keep-out plane · workspace · axes · full target drawing';
+  gbtn.title='Yellow boundary: reachable region. Keep the target inside. Also shows the keep-out plane, axes and full target drawing.';
   gbtn.onclick=()=>setGuides(!guides);
   if(row)row.appendChild(gbtn);
 
@@ -71,19 +92,20 @@
   const fl=document.createElement('div');fl.className='sl-float';
   fl.innerHTML='<div class="sl-in">'+[['x','m'],['y','m'],['z','m'],['angle','°']].map(([k,u])=>
    `<label><span>${k}</span><input id="sl-${k}" type="number" step="${k==='angle'?5:0.05}"><i>${u}</i></label>`).join('')+'</div>'
-   +'<button id="sl-run" class="sl-run" disabled>Run</button><p id="sl-msg" class="sl-msg"></p>'
+   +'<button id="sl-run" class="sl-run" aria-describedby="sl-validation" disabled>Run</button>'
+   +'<p id="sl-validation" class="sl-msg" role="status" aria-live="polite" hidden></p><p id="sl-msg" class="sl-msg"></p>'
    +'<table id="sl-res" class="sl-res"></table>';
   card.appendChild(fl);
   const $=id=>document.getElementById(id);
   const inp={x:$('sl-x'),y:$('sl-y'),z:$('sl-z'),angle:$('sl-angle')};
-  function paintInputs(){
-   const put=(k,v)=>{if(document.activeElement!==inp[k])inp[k].value=v;};
+  function paintInputs(force=false){
+   const put=(k,v)=>{if(force||document.activeElement!==inp[k])inp[k].value=v;};
    put('x',G.p[0].toFixed(3));put('y',G.p[1].toFixed(3));put('z',G.p[2].toFixed(3));put('angle',(-G.th*R2D).toFixed(1));
   }
-  Object.entries(inp).forEach(([k,el])=>el.addEventListener('change',()=>{
-   const v=+el.value;if(!isFinite(v))return;
+  Object.entries(inp).forEach(([k,el])=>el.addEventListener('input',()=>{
+   const v=el.valueAsNumber;if(!Number.isFinite(v)){updateRunState();return;}
    if(k==='angle')setGoal(null,-v*D2R);else{const p=G.p.slice();p['xyz'.indexOf(k)]=v;setGoal(p);}
-   syncHandles();paintResult();vw.draw();}));
+   syncHandles();paintResult();updateRunState();vw.draw();}));
 
   // the goal as handles: the T ball (position) and the ball on its arrow (angle)
   // the angle handle sits on the arrowhead; guides off draws no dot there (r ~ 0),
@@ -95,7 +117,7 @@
   vw.onhandle=(id,p,phase)=>{
    if(id==='goal'&&p)setGoal(p);
    else if(id==='gdir'&&p){const v=DY.sub(p,G.p);if(Math.hypot(...v)>1e-4)setGoal(null,thetaOf(v,G.p));}
-   syncHandles();paintInputs();if(phase==='end')paintResult();
+   syncHandles();paintInputs();updateRunState();if(phase==='end')paintResult();
   };
   // the panel's goal arrow, in both modes (the full drawing adds sphere, gate, wedge)
   vw.hooks.push(V=>{V.arrow(G.p,DY.add(G.p,DY.scl(G.d,0.35)),'--goal',2);});
@@ -127,7 +149,7 @@
    else{const s=swings[i],g=s.sample.goals[0];
     setGoal(g.p,thetaOf(g.d,g.p));
     note.textContent=`Traj ${s.key} — target (${g.p.map(v=>v.toFixed(1)).join(', ')}) m, arrival ${angle(s.angle)} · ${s.sample.note}`;}
-   syncHandles();paintInputs();paintResult();
+   syncHandles();paintInputs(true);paintResult();updateRunState();
   }
   const prev=vw.onsample;vw.onsample=i=>{if(prev)prev(i);mark(i);};
 
@@ -135,13 +157,23 @@
   const api=(path,body)=>fetch(API+path,body?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}:{})
    .then(r=>r.ok?r.json():r.json().catch(()=>({})).then(j=>{throw Error(j.error||r.status+'');}));
   const run=$('sl-run'),msg=$('sl-msg');let online=false,busy=false,idle='';
+  function updateRunState(){
+   const invalid=Object.values(inp).some(el=>!Number.isFinite(el.valueAsNumber));
+   const error=invalid?'Enter a finite number for each target coordinate and angle.'
+    :!regionReady?'Reachable region unavailable. Reload the page before running.'
+    :!inReachableRegion(G.p)?'Target is outside the reachable region. Move it inside the yellow boundary.'
+      +(guides?'':' Turn on Guides to see the boundary.') :'';
+   const validation=$('sl-validation');validation.textContent=error;validation.hidden=!error;
+   run.disabled=!online||busy||!!error;
+   return !run.disabled;
+  }
   const say=s=>{msg.textContent=s;};
   const poll=id=>new Promise((ok,no)=>{const tick=()=>api('/api/job/'+id).then(j=>{
    if(j.state==='done')return ok(j.result);if(j.state==='error')return no(Error(j.error));
    say((j.progress||j.state)+'…');setTimeout(tick,250);}).catch(no);tick();});
   const every=(a,k)=>a.filter((_,i)=>i%k===0||i===a.length-1);
   run.onclick=()=>{
-   if(!online||busy)return;busy=true;run.disabled=true;run.textContent='Running…';say('');
+   if(!updateRunState())return;busy=true;run.disabled=true;run.textContent='Running…';say('');
    const goal={p:G.p.slice(),th:G.th,d:G.d.slice()};
    api('/api/infer',{goal:{p:goal.p,d:goal.d}}).then(j=>poll(j.id)).then(r=>{
     const m=r.metrics,n=runs.length+1;
@@ -158,10 +190,10 @@
     addButton(`Run ${n}`,vw.samples.length-1,s.note).classList.add('sl-runbtn');
     vw.setSample(vw.samples.length-1);
     if(vw.setPlaying)vw.setPlaying(true);
-   }).catch(e=>say('Run failed: '+e.message)).finally(()=>{busy=false;run.disabled=!online;run.textContent='Run';if(!msg.textContent.startsWith('Run failed'))say(idle);});
+   }).catch(e=>say('Run failed: '+e.message)).finally(()=>{busy=false;updateRunState();run.textContent='Run';if(!msg.textContent.startsWith('Run failed'))say(idle);});
   };
   api('/api/health').then(h=>{
-   online=!!h.ready;run.disabled=!online;
+   online=!!h.ready;updateRunState();
    idle=!online?'policy offline':(h.model&&!h.model.record?`model: ${h.model.key} stand-in`:'');say(idle);
   }).catch(()=>{idle='policy offline';say(idle);});
 
