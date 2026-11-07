@@ -105,7 +105,7 @@ test('Metadata axis normalization, minimum projection and limits are not hard-co
 });
 
 test('Page explains yellow reachable boundary and loads current validation controller', ()=>{
-  const html=fs.readFileSync(path.join(root,'index.html'),'utf8');assert.match(html,/The yellow boundary marks the reachable region\. Keep the pink target inside it/);assert.match(html,/viewer\.js\?v=reachable-region-1/);
+  const html=fs.readFileSync(path.join(root,'index.html'),'utf8');assert.match(html,/The yellow boundary marks the reachable region\. Keep the pink target inside it/);assert.match(html,/<iframe id=\"swing-embed\" src=\"https:\/\/swing-rope\.strange-thing\.org\/\"/);
 });
 
 
